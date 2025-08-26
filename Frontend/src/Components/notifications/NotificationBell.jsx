@@ -58,6 +58,15 @@ const NotificationBell = () => {
       }
     } catch (error) {
       console.error("Failed to load notifications:", error);
+      
+      // Provide more user-friendly error messages
+      if (error.message.includes("Backend server is not available")) {
+        console.warn("Server is currently unavailable. Notifications will be retried later.");
+      } else if (error.message.includes("Authentication failed")) {
+        console.warn("Authentication failed. User may need to log in again.");
+      } else if (error.message.includes("No authentication token found")) {
+        console.warn("No authentication token found. User needs to log in.");
+      }
     } finally {
       setLoading(false);
     }
@@ -69,6 +78,9 @@ const NotificationBell = () => {
       setUnreadCount(count);
     } catch (error) {
       console.error("Failed to load unread count:", error);
+      
+      // Don't show errors for unread count, just set to 0
+      setUnreadCount(0);
     }
   };
 

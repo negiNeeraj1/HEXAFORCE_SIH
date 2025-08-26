@@ -1,13 +1,32 @@
 const NOTIFICATION_API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "https://aistudy-xfxe.onrender.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 class NotificationService {
+  // Check if backend is available
+  async checkBackendHealth() {
+    try {
+      const response = await fetch(`${NOTIFICATION_API_BASE.replace('/api', '')}/health`, {
+        method: 'GET',
+        timeout: 5000
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
   // Get user notifications with improved error handling
   async getUserNotifications(params = {}) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error("No authentication token found");
+        throw new Error("No authentication token found. Please log in again.");
+      }
+
+      // Check backend health first
+      const isBackendHealthy = await this.checkBackendHealth();
+      if (!isBackendHealthy) {
+        throw new Error("Backend server is not available. Please try again later.");
       }
 
       const queryString = new URLSearchParams(params).toString();
@@ -25,6 +44,9 @@ class NotificationService {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
         throw new Error(
           data.error || `Server responded with ${response.status}`
         );
