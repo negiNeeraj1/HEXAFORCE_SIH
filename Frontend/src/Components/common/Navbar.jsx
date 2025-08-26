@@ -12,6 +12,7 @@ import {
   X,
   TreePine,
   ChevronDown,
+  Target,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import NotificationBell from "../notifications/NotificationBell";
@@ -23,7 +24,18 @@ const navItems = [
     icon: LayoutDashboard,
     gradient: "from-green-500 to-green-600",
   },
-  
+  {
+    path: "/eco-challenges",
+    label: "Eco Challenges",
+    icon: Target,
+    gradient: "from-green-500 to-emerald-600",
+  },
+  {
+    path: "/fun-challenges",
+    label: "Fun Challenges",
+    icon: Target,
+    gradient: "from-emerald-500 to-teal-600",
+  },
   {
     path: "/quizzes",
     label: "Eco Quizzes",
