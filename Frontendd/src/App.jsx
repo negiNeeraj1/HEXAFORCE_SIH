@@ -1,14 +1,16 @@
-import React from 'react'
-import { useState } from 'react'
-import Challenges from './pages/Challenges'
+import React from 'react';
+import Design from '../Design';
 
 function App() {
+	return (
+		<div>
+			<Design />
 
-  return (
-    <>
-    <Challenges />
-    </>
-  )
+			<div>
+				<h1 className="bg-amber-700 text-white p-2 rounded">hello</h1>
+			</div>
+		</div>
+	);
 }
 
 export default App;
