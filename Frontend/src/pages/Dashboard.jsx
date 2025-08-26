@@ -46,11 +46,16 @@ const Dashboard = () => {
   const loadAllData = async () => {
     try {
       setLoading(true);
-      const [pointsResponse, challengesResponse, funStatsResponse, funChallengesResponse] = await Promise.all([
+      const [
+        pointsResponse,
+        challengesResponse,
+        funStatsResponse,
+        funChallengesResponse,
+      ] = await Promise.all([
         ecoChallengeService.getUserPoints(),
         ecoChallengeService.getUserChallenges("active"),
         ecoChallengeService.getFunChallengeStats(),
-        ecoChallengeService.getUserFunChallenges("completed")
+        ecoChallengeService.getUserFunChallenges("completed"),
       ]);
 
       if (pointsResponse.success) {
@@ -250,7 +255,10 @@ const Dashboard = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {userChallenges.slice(0, 3).map((userChallenge) => (
-                  <div key={userChallenge._id} className="border border-gray-200 rounded-lg p-4">
+                  <div
+                    key={userChallenge._id}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium text-gray-900">
                         {userChallenge.challengeId?.title}
@@ -263,7 +271,11 @@ const Dashboard = () => {
                       {userChallenge.challengeId?.description}
                     </div>
                     <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>Progress: {userChallenge.progress?.totalCompletions || 0}/{userChallenge.challengeId?.duration || 7}</span>
+                      <span>
+                        Progress:{" "}
+                        {userChallenge.progress?.totalCompletions || 0}/
+                        {userChallenge.challengeId?.duration || 7}
+                      </span>
                       <span>{userChallenge.pointsEarned || 0} pts</span>
                     </div>
                   </div>
@@ -294,7 +306,7 @@ const Dashboard = () => {
                   View All
                 </a>
               </div>
-              
+
               {/* Fun Challenge Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                 <div className="text-center">
@@ -317,7 +329,12 @@ const Dashboard = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-orange-600 mb-2">
-                    {funChallengeStats.totalCompleted > 0 ? Math.round((funChallengeStats.totalCompleted / 17) * 100) : 0}%
+                    {funChallengeStats.totalCompleted > 0
+                      ? Math.round(
+                          (funChallengeStats.totalCompleted / 17) * 100
+                        )
+                      : 0}
+                    %
                   </div>
                   <div className="text-sm text-gray-600">Progress</div>
                 </div>
@@ -326,10 +343,15 @@ const Dashboard = () => {
               {/* Recent Completed Fun Challenges */}
               {completedFunChallenges.length > 0 && (
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Recently Completed</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Recently Completed
+                  </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {completedFunChallenges.slice(0, 3).map((challenge) => (
-                      <div key={challenge._id} className="border border-gray-200 rounded-lg p-4 bg-green-50">
+                      <div
+                        key={challenge._id}
+                        className="border border-gray-200 rounded-lg p-4 bg-green-50"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-gray-900">
                             {challenge.title}
@@ -340,7 +362,8 @@ const Dashboard = () => {
                           Category: {challenge.category}
                         </div>
                         <div className="text-xs text-gray-500">
-                          Completed: {new Date(challenge.completedAt).toLocaleDateString()}
+                          Completed:{" "}
+                          {new Date(challenge.completedAt).toLocaleDateString()}
                         </div>
                         <div className="text-xs text-green-600 font-medium mt-2">
                           +{challenge.pointsEarned} points
