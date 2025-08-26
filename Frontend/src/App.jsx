@@ -19,6 +19,7 @@ import DebugPanel from "./Components/common/DebugPanel";
 const App = () => {
   const { user } = useAuth();
   return (
+    
     <>
       <Routes>
         <Route path="/" element={user ? <DashboardLanding /> : <Landing />} />

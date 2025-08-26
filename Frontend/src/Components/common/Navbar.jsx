@@ -182,7 +182,7 @@ const Navbar = () => {
         <div className="text-2xl font-bold tracking-wider drop-shadow-lg hover:scale-105 transition-transform duration-300 text-white">
           EcoChallenge Hub
         </div>
-      </Link>
+       
 
       {/* Desktop Buttons */}
       <div className="hidden md:flex space-x-4">
