@@ -30,15 +30,6 @@ const navItems = [
     icon: Target,
     gradient: "from-green-500 to-emerald-600",
   },
-<<<<<<< HEAD
-  {
-    path: "/fun-challenges",
-    label: "Fun Challenges",
-    icon: Target,
-    gradient: "from-emerald-500 to-teal-600",
-  },
-=======
->>>>>>> 9b18463564448ed990d310c1f3af9f7c647764db
   {
     path: "/quizzes",
     label: "Eco Quizzes",
