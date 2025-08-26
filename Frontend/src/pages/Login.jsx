@@ -184,4 +184,4 @@ const Login = () => {
 	);
 };
 
-export default EnvironmentalStudiesLogin;
+export default Login;

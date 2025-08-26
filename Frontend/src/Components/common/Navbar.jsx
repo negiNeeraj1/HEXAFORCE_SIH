@@ -42,6 +42,12 @@ const navItems = [
     icon: Bot,
     gradient: "from-blue-600 to-green-600",
   },
+  {
+  path: "/feedback",
+  label: "Feedback",
+  icon: BookOpen, // you already imported BookOpen
+  gradient: "from-purple-500 to-pink-600",
+},
 ];
 
 const Navbar = () => {

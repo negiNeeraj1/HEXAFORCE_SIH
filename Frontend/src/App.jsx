@@ -14,6 +14,7 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import DashboardLanding from "./pages/DashboardLanding";
 import EcoChallenges from "./pages/EcoChallenges";
+import Feedback from "./pages/Feedback";
 import { useAuth } from "./context/AuthContext";
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/quiz-history" element={<QuizHistoryPage />} />
           <Route path="/assistant" element={<Assistant />} />
           <Route path="/eco-challenges" element={<EcoChallenges />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Route>
       </Routes>
     </>
