@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  Brain,
+  Leaf,
   BookOpen,
   Trophy,
   Bot,
@@ -10,7 +10,7 @@ import {
   User,
   Menu,
   X,
-  Sparkles,
+  TreePine,
   ChevronDown,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -19,27 +19,22 @@ import NotificationBell from "../notifications/NotificationBell";
 const navItems = [
   {
     path: "/dashboard",
-    label: "Dashboard",
+    label: "Eco Dashboard",
     icon: LayoutDashboard,
-    gradient: "from-blue-500 to-blue-600",
+    gradient: "from-green-500 to-green-600",
   },
-  {
-    path: "/study-material",
-    label: "Study Material",
-    icon: BookOpen,
-    gradient: "from-purple-500 to-purple-600",
-  },
+  
   {
     path: "/quizzes",
-    label: "Quizzes",
+    label: "Eco Quizzes",
     icon: Trophy,
-    gradient: "from-blue-600 to-purple-600",
+    gradient: "from-green-600 to-blue-600",
   },
   {
     path: "/assistant",
-    label: "AI Assistant",
+    label: "AI Eco Assistant",
     icon: Bot,
-    gradient: "from-purple-600 to-blue-600",
+    gradient: "from-blue-600 to-green-600",
   },
 ];
 
@@ -80,13 +75,13 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Brain className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Leaf className="w-6 h-6 text-white" />
               </div>
-              <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-purple-500 animate-pulse" />
+              <TreePine className="absolute -top-1 -right-1 w-4 h-4 text-green-500 animate-pulse" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Study AI
+            <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              EcoLearn
             </span>
           </Link>
 

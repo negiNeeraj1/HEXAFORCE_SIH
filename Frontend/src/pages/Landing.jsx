@@ -13,10 +13,14 @@ import {
   Users,
   Trophy,
   Clock,
+  Leaf,
+  TreePine,
+  Recycle,
+  Globe,
 } from "lucide-react";
 import Footer from "../Components/common/Footer";
 
-const StudyAILanding = () => {
+const EcoLearnLanding = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -31,71 +35,75 @@ const StudyAILanding = () => {
 
   const features = [
     {
-      icon: <Brain className="w-8 h-8" />,
-      title: "AI-Powered Quizzes",
+      icon: <Leaf className="w-8 h-8" />,
+      title: "Interactive Environmental Quizzes",
       description:
-        "Personalized quizzes that adapt to your learning pace and identify knowledge gaps instantly.",
+        "Gamified learning about climate change, sustainability, and local ecological issues through engaging quizzes.",
     },
     {
-      icon: <BookOpen className="w-8 h-8" />,
-      title: "Smart Study Materials",
+      icon: <TreePine className="w-8 h-8" />,
+      title: "Real-World Eco Challenges",
       description:
-        "AI-curated content tailored to your curriculum and learning style for maximum retention.",
+        "Practical tasks like tree-planting, waste segregation, and community clean-up drives with digital tracking.",
     },
     {
       icon: <MessageCircle className="w-8 h-8" />,
-      title: "24/7 AI Assistant",
+      title: "AI Eco Assistant",
       description:
-        "Get instant answers to your questions and explanations that make complex topics simple.",
+        "Get instant answers about environmental issues, sustainable practices, and local ecological concerns.",
     },
     {
       icon: <BarChart3 className="w-8 h-8" />,
-      title: "Progress Dashboard",
+      title: "Eco-Points Dashboard",
       description:
-        "Track your learning journey with detailed analytics and personalized insights.",
+        "Track your environmental impact, earn badges, and compete with schools in sustainability challenges.",
     },
   ];
 
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Medical Student",
+      name: "Priya Sharma",
+      role: "Eco-Club Coordinator",
       content:
-        "Study AI helped me ace my MCAT prep. The personalized quizzes were a game-changer!",
+        "EcoLearn has transformed how our students engage with environmental issues. The gamified approach is brilliant!",
       rating: 5,
-      avatar: "👩‍⚕️",
+      avatar: "🌱",
     },
     {
-      name: "Marcus Johnson",
-      role: "Computer Science Major",
-      content:
-        "The AI assistant explains complex algorithms better than my professors. Absolutely love it!",
-      rating: 5,
-      avatar: "👨‍💻",
-    },
-    {
-      name: "Emily Rodriguez",
+      name: "Arjun Mehta",
       role: "High School Student",
       content:
-        "My grades improved by 20% after using Study AI. The progress tracking keeps me motivated!",
+        "I've learned so much about sustainability through the interactive quizzes. Now I'm leading our school's eco-initiative!",
       rating: 5,
-      avatar: "👩‍🎓",
+      avatar: "🌍",
+    },
+    {
+      name: "Dr. Kavita Patel",
+      role: "Environmental Science Teacher",
+      content:
+        "The platform makes complex environmental concepts accessible and engaging. Students are actually excited to learn!",
+      rating: 5,
+      avatar: "🌿",
     },
   ];
 
   const stats = [
     {
       icon: <Users className="w-6 h-6" />,
-      value: "50K+",
-      label: "Active Students",
+      value: "25K+",
+      label: "Eco-Warriors",
     },
     {
       icon: <Trophy className="w-6 h-6" />,
-      value: "95%",
-      label: "Success Rate",
+      value: "500+",
+      label: "Trees Planted",
     },
-    { icon: <Clock className="w-6 h-6" />, value: "24/7", label: "AI Support" },
-    { icon: <Star className="w-6 h-6" />, value: "4.9", label: "User Rating" },
+    {
+      icon: <Recycle className="w-6 h-6" />,
+      value: "2.5T",
+      label: "Waste Diverted",
+    },
+    { icon: <Star className="w-6 h-6" />, value: "4.8", label: "User Rating" },
   ];
 
   // Custom smooth scroll handler for slower, smoother scroll
@@ -128,11 +136,11 @@ const StudyAILanding = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-100 overflow-hidden flex flex-col pt-16">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-100 overflow-hidden flex flex-col pt-16">
         {/* Animated Background Elements */}
         <div className="fixed inset-0 pointer-events-none">
           <div
-            className="absolute w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"
+            className="absolute w-96 h-96 bg-gradient-to-r from-green-400/20 to-blue-400/20 rounded-full blur-3xl animate-pulse"
             style={{
               left: mousePosition.x / 20,
               top: mousePosition.y / 20,
@@ -140,11 +148,11 @@ const StudyAILanding = () => {
             }}
           />
           <div
-            className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-r from-purple-400/10 to-blue-400/10 rounded-full blur-2xl animate-bounce"
+            className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-r from-blue-400/10 to-green-400/10 rounded-full blur-2xl animate-bounce"
             style={{ animationDuration: "3s" }}
           />
           <div
-            className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-indigo-400/10 rounded-full blur-2xl animate-pulse"
+            className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-full blur-2xl animate-pulse"
             style={{ animationDuration: "4s" }}
           />
         </div>
@@ -159,34 +167,35 @@ const StudyAILanding = () => {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-purple-200/50 mb-8 group hover:bg-white/90 transition-all duration-300">
-                <Sparkles className="w-4 h-4 text-purple-600 mr-2 group-hover:animate-spin" />
+              <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-green-200/50 mb-8 group hover:bg-white/90 transition-all duration-300">
+                <Leaf className="w-4 h-4 text-green-600 mr-2 group-hover:animate-pulse" />
                 <span className="text-sm font-medium text-gray-700">
-                  Powered by Advanced AI Technology
+                  Empowering the Next Generation of Eco-Warriors
                 </span>
               </div>
-              <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight">
-                Learn Smarter,
+              <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-green-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent leading-tight">
+                Learn to Save
                 <br />
                 <span className="relative">
-                  Not Harder
-                  <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700"></div>
+                  Our Planet
+                  <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700"></div>
                 </span>
               </h1>
               <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-                Transform your study experience with AI-powered personalized
-                learning that adapts to your pace and maximizes your potential.
+                Join thousands of students learning about climate change,
+                sustainability, and environmental protection through interactive
+                quizzes and real-world challenges.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link
                   to="/signup"
-                  className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center">
-                    Get Started Free
+                    Start Your Eco Journey
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
                 <Link
                   to="/login"
@@ -249,12 +258,12 @@ const StudyAILanding = () => {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Supercharge Your Learning
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                Empower Environmental Action
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Discover powerful AI-driven features designed to accelerate your
-                academic success
+                Discover innovative tools designed to make environmental
+                learning engaging, practical, and impactful
               </p>
             </div>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -305,12 +314,13 @@ const StudyAILanding = () => {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Success Stories
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+                Eco-Warrior Success Stories
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Join thousands of students who've transformed their learning
-                journey with Study AI
+                Join thousands of students who've transformed their
+                environmental awareness and taken action for a sustainable
+                future
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
@@ -366,18 +376,18 @@ const StudyAILanding = () => {
         <section className="relative z-10 px-6 py-20" id="contact">
           <div className="max-w-4xl mx-auto text-center">
             <div
-              className={`p-12 bg-gradient-to-r from-blue-600/90 to-purple-600/90 backdrop-blur-sm rounded-3xl border border-white/20 shadow-2xl transition-all duration-1000 ${
+              className={`p-12 bg-gradient-to-r from-green-600/90 to-blue-600/90 backdrop-blur-sm rounded-3xl border border-white/20 shadow-2xl transition-all duration-1000 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-8"
               }`}
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-                Ready to Transform Your Learning?
+                Ready to Save Our Planet?
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Join Study AI today and experience the future of personalized
-                education
+                Join EcoLearn today and become part of the solution to climate
+                change
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
@@ -385,7 +395,7 @@ const StudyAILanding = () => {
                   className="group px-8 py-4 bg-white text-blue-600 rounded-2xl font-semibold text-lg shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 hover:scale-105"
                 >
                   <span className="flex items-center justify-center">
-                    Start Learning Now
+                    Start Your Eco Journey
                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                   </span>
                 </Link>
@@ -404,4 +414,4 @@ const StudyAILanding = () => {
   );
 };
 
-export default StudyAILanding;
+export default EcoLearnLanding;

@@ -3,8 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import "./index.css";
 import Landing from "./pages/Landing";
-import StudyMaterial from "./pages/StudyMaterial";
-import StudyMaterialDetail from "./pages/StudyMaterialDetail";
 import Quizzes from "./pages/Quizzes";
 import QuizDashboard from "./Components/quiz/QuizDashboard";
 import QuizTaking from "./Components/quiz/QuizTaking";
@@ -34,8 +32,6 @@ const App = () => {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/study-material" element={<StudyMaterial />} />
-          <Route path="/study-material/:id" element={<StudyMaterialDetail />} />
           <Route path="/quizzes" element={<Quizzes />} />
           <Route path="/quiz/:quizId" element={<QuizTaking />} />
           <Route path="/quiz-history" element={<QuizHistoryPage />} />
