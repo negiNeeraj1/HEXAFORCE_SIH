@@ -13,6 +13,7 @@ import {
   TreePine,
   ChevronDown,
   Target,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import NotificationBell from "../notifications/NotificationBell";
@@ -46,6 +47,13 @@ const navItems = [
     path: "/assistant",
     label: "AI Eco Assistant",
     icon: Bot,
+    gradient: "from-blue-600 to-green-600",
+  },
+
+  {
+    path: "/feedback",
+    label: "Feedback",
+    icon: MessageCircle,
     gradient: "from-blue-600 to-green-600",
   },
 ];

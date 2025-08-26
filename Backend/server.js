@@ -26,52 +26,7 @@ const cors = require("cors");
 
 const mongoose = require("mongoose");
 
-const connectDB = async () => {
-  try {
-    const mongoUri =
-      process.env.MONGODB_URI ||
-      process.env.MONGO_URI ||
-      "mongodb://localhost:27017/study-ai";
-
-    console.log("🔌 Attempting to connect to MongoDB...");
-    console.log(
-      "📍 Connection string:",
-      mongoUri.replace(/\/\/[^:]+:[^@]+@/, "//***:***@")
-    ); // Hide credentials in logs
-
-    const connectionOptions = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // 5 second timeout
-      socketTimeoutMS: 45000, // 45 second timeout
-      // Removed deprecated options: bufferMaxEntries, bufferCommands
-    };
-
-    await mongoose.connect(mongoUri, connectionOptions);
-    console.log("✅ MongoDB connected successfully!");
-
-    // Test the connection
-    const db = mongoose.connection;
-    db.on("error", (err) => {
-      console.error("❌ MongoDB connection error:", err);
-    });
-
-    db.on("disconnected", () => {
-      console.log("⚠️ MongoDB disconnected");
-    });
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err.message);
-    console.error("🔍 Error details:", err);
-
-    // Don't exit immediately, give it a chance to retry
-    if (process.env.NODE_ENV === "production") {
-      console.log("🔄 Retrying connection in 5 seconds...");
-      setTimeout(connectDB, 5000);
-    } else {
-      process.exit(1);
-    }
-  }
-};
+const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes = require("./routes/aiRoutes");

@@ -5,54 +5,74 @@
  * Quick test to verify your Atlas connection works
  */
 
-require("dotenv").config({ path: require('path').join(__dirname, '..', '.env') });
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+require('dotenv').config({ path: process.env.ENV_FILE || '.env' });
 
-const testConnection = async () => {
-  try {
-    console.log("🔗 Testing MongoDB Atlas connection...\n");
+const testConnections = async () => {
+  const connections = [
+    {
+      name: 'Local MongoDB (Default)',
+      uri: 'mongodb://localhost:27017/study-ai'
+    },
+    {
+      name: 'Local MongoDB (Port 27018)',
+      uri: 'mongodb://localhost:27018/study-ai'
+    },
+    {
+      name: 'Docker MongoDB (Authenticated)',
+      uri: 'mongodb://admin:hexaforce123@localhost:27017/study-ai?authSource=admin'
+    },
+    {
+      name: 'Environment Variable',
+      uri: process.env.MONGODB_URI || process.env.MONGO_URI
+    }
+  ];
 
-    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
-    console.log(
-      "📍 Connection URI:",
-      mongoUri ? mongoUri.replace(/:[^:]*@/, ":****@") : "NOT SET"
-    );
+  console.log('🔍 Testing MongoDB Connections...\n');
 
-    if (!mongoUri || mongoUri.includes("YOUR_USERNAME")) {
-      console.log("❌ MongoDB URI not properly configured!");
-      console.log(
-        "📝 Please update your .env file with your Atlas connection string"
-      );
-      return;
+  for (const connection of connections) {
+    if (!connection.uri) {
+      console.log(`❌ ${connection.name}: No URI provided`);
+      continue;
     }
 
-    console.log("⏳ Connecting to MongoDB Atlas...");
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-
-    console.log("✅ Successfully connected to MongoDB Atlas!");
-    console.log("📊 Database name:", mongoose.connection.db.databaseName);
-
-    // Test a simple operation
-    const collections = await mongoose.connection.db
-      .listCollections()
-      .toArray();
-    console.log(`📁 Found ${collections.length} collections in database`);
-
-    mongoose.connection.close();
-    console.log("\n🎉 MongoDB Atlas connection test successful!");
-  } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message);
-    console.log("\n💡 Common fixes:");
-    console.log("1. Check your username and password in the connection string");
-    console.log("2. Whitelist your IP address in Atlas Network Access");
-    console.log("3. Make sure your cluster is running");
-    console.log("4. Verify the database name is correct");
+    try {
+      console.log(`🔌 Testing: ${connection.name}`);
+      console.log(`📍 URI: ${connection.uri.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')}`);
+      
+      const startTime = Date.now();
+      await mongoose.connect(connection.uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 3000,
+        socketTimeoutMS: 10000,
+      });
+      
+      const endTime = Date.now();
+      console.log(`✅ SUCCESS! Connected in ${endTime - startTime}ms`);
+      
+      // Test basic operations
+      const db = mongoose.connection.db;
+      const collections = await db.listCollections().toArray();
+      console.log(`📊 Collections found: ${collections.length}`);
+      
+      await mongoose.disconnect();
+      console.log('🔌 Disconnected\n');
+      
+    } catch (error) {
+      console.log(`❌ FAILED: ${error.message}\n`);
+    }
   }
+
+  console.log('🎯 Connection test completed!');
+  console.log('\n💡 Tips:');
+  console.log('- If local connections fail, make sure MongoDB is running');
+  console.log('- For Docker: run "docker-compose up -d" in the Backend directory');
+  console.log('- For different ports: start MongoDB with --port flag');
+  console.log('- For authentication: create users in MongoDB');
 };
 
-testConnection();
+// Run the test
+testConnections().catch(console.error);
 
 
