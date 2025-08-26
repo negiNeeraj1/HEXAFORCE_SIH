@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
-import CongratulationsView from './CongratulationsView';
-import ChallengeImage from './ChallengeImage';
+import React, { useState } from "react";
+import CongratulationsView from "./CongratulationsView";
+import ChallengeImage from "./ChallengeImage";
 
 const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
   const [currentChallenge, setCurrentChallenge] = useState(challenge);
   const [showCongratulations, setShowCongratulations] = useState(false);
 
-  const handleCompleteChallenge = () => {
-    const updatedChallenge = { ...currentChallenge, isStarted: true };
-    setCurrentChallenge(updatedChallenge);
-    onChallengeUpdated(updatedChallenge);
-    setShowCongratulations(true);
+  const handleCompleteChallenge = async () => {
+    try {
+      // Call the API to complete the challenge
+      await onChallengeUpdated(currentChallenge);
+
+      // Update local state
+      const updatedChallenge = { ...currentChallenge, isStarted: true };
+      setCurrentChallenge(updatedChallenge);
+      setShowCongratulations(true);
+    } catch (error) {
+      console.error("Failed to complete challenge:", error);
+      alert("Failed to complete challenge. Please try again.");
+    }
   };
 
   const getCategoryIcon = (category) => {
@@ -20,20 +28,16 @@ const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
       recycling: { icon: "♻️", color: "text-green-500" },
       transportation: { icon: "🚗", color: "text-red-500" },
       nature: { icon: "🌿", color: "text-green-500" },
-      all: { icon: "🌍", color: "text-gray-500" }
+      all: { icon: "🌍", color: "text-gray-500" },
     };
-    
+
     const iconData = icons[category] || icons.all;
-    return (
-      <div className={`text-5xl ${iconData.color}`}>
-        {iconData.icon}
-      </div>
-    );
+    return <div className={`text-5xl ${iconData.color}`}>{iconData.icon}</div>;
   };
 
   if (showCongratulations) {
     return (
-      <CongratulationsView 
+      <CongratulationsView
         challengeTitle={currentChallenge.title}
         onDismiss={() => onClose()}
       />
@@ -56,7 +60,7 @@ const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
             {/* Challenge Image */}
             <div className="flex justify-center">
               <div className="h-48 w-full rounded-lg overflow-hidden">
-                <ChallengeImage 
+                <ChallengeImage
                   imageName={currentChallenge.imageName}
                   title={currentChallenge.title}
                   className="h-48 w-full rounded-lg"
@@ -106,11 +110,13 @@ const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
             disabled={currentChallenge.isStarted}
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-colors mt-6 ${
               currentChallenge.isStarted
-                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                : 'bg-green-600 text-white hover:bg-green-700'
+                ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                : "bg-green-600 text-white hover:bg-green-700"
             }`}
           >
-            {currentChallenge.isStarted ? 'Challenge Completed' : 'Complete Challenge!'}
+            {currentChallenge.isStarted
+              ? "Challenge Completed"
+              : "Complete Challenge!"}
           </button>
         </div>
       </div>

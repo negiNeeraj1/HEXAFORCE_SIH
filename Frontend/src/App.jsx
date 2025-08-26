@@ -14,9 +14,7 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./Components/auth/ProtectedRoute";
 import DashboardLanding from "./pages/DashboardLanding";
 import EcoChallenges from "./pages/EcoChallenges";
-import FunChallenges from "./pages/FunChallenges";
 import { useAuth } from "./context/AuthContext";
-import DebugPanel from "./Components/common/DebugPanel";
 
 const App = () => {
   const { user } = useAuth();
@@ -39,11 +37,8 @@ const App = () => {
           <Route path="/quiz-history" element={<QuizHistoryPage />} />
           <Route path="/assistant" element={<Assistant />} />
           <Route path="/eco-challenges" element={<EcoChallenges />} />
-          <Route path="/fun-challenges" element={<FunChallenges />} />
         </Route>
       </Routes>
-      {/* Debug Panel - only shows in development mode */}
-      <DebugPanel />
     </>
   );
 };

@@ -8,17 +8,7 @@ import Navbar from "./Components/common/Navbar";
 import Footer from "./Components/common/Footer";
 import "./index.css";
 
-// Import debugger
-import "./utils/debugger";
 
-// Development mode debug info
-if (import.meta.env.DEV) {
-  console.info("🛠️ Running in DEVELOPMENT mode");
-  console.info(
-    "📡 API URL:",
-    import.meta.env.VITE_API_URL || "http://localhost:5000/api"
-  );
-}
 
 const root = document.getElementById("root");
 if (root) {

@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
-import ChallengeCard from './ChallengeCard';
-import ChallengeDetailView from './ChallengeDetailView';
+import React, { useState } from "react";
+import ChallengeCard from "./ChallengeCard";
+import ChallengeDetailView from "./ChallengeDetailView";
 
-const ChallengesView = ({ challenges, onChallengeUpdated }) => {
+const ChallengesView = ({
+  challenges,
+  onChallengeUpdated,
+  loading = false,
+  error = "",
+}) => {
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const handleChallengePress = (challenge) => {
     setSelectedChallenge(challenge);
@@ -21,17 +26,20 @@ const ChallengesView = ({ challenges, onChallengeUpdated }) => {
     onChallengeUpdated(updatedChallenge);
   };
 
-  const filteredChallenges = selectedCategory === 'all' 
-    ? challenges 
-    : challenges.filter(challenge => challenge.category === selectedCategory);
+  const filteredChallenges =
+    selectedCategory === "all"
+      ? challenges
+      : challenges.filter(
+          (challenge) => challenge.category === selectedCategory
+        );
 
   const categories = [
-    { id: 'all', label: 'All', icon: '🌍' },
-    { id: 'water', label: 'Water', icon: '💧' },
-    { id: 'energy', label: 'Energy', icon: '⚡' },
-    { id: 'recycling', label: 'Recycling', icon: '♻️' },
-    { id: 'transportation', label: 'Transportation', icon: '🚗' },
-    { id: 'nature', label: 'Nature', icon: '🌿' }
+    { id: "all", label: "All", icon: "🌍" },
+    { id: "water", label: "Water", icon: "💧" },
+    { id: "energy", label: "Energy", icon: "⚡" },
+    { id: "recycling", label: "Recycling", icon: "♻️" },
+    { id: "transportation", label: "Transportation", icon: "🚗" },
+    { id: "nature", label: "Nature", icon: "🌿" },
   ];
 
   return (
@@ -44,8 +52,12 @@ const ChallengesView = ({ challenges, onChallengeUpdated }) => {
               <span className="text-2xl">🌱</span>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Fun Challenges</h1>
-              <p className="text-gray-600">Complete eco-friendly challenges and earn points!</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Fun Challenges
+              </h1>
+              <p className="text-gray-600">
+                Complete eco-friendly challenges and earn points!
+              </p>
             </div>
           </div>
         </div>
@@ -61,8 +73,8 @@ const ChallengesView = ({ challenges, onChallengeUpdated }) => {
                 onClick={() => setSelectedCategory(category.id)}
                 className={`flex items-center space-x-2 px-5 py-3 rounded-full font-medium transition-all duration-200 whitespace-nowrap ${
                   selectedCategory === category.id
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? "bg-green-600 text-white shadow-lg"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
                 <span className="text-lg">{category.icon}</span>
@@ -73,14 +85,58 @@ const ChallengesView = ({ challenges, onChallengeUpdated }) => {
         </div>
 
         {/* Challenges Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredChallenges.map((challenge) => (
-            <ChallengeCard
-              key={challenge.id}
-              challenge={challenge}
-              onPress={handleChallengePress}
-            />
-          ))}
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredChallenges.map((challenge) => (
+              <ChallengeCard
+                key={challenge.id}
+                challenge={challenge}
+                onPress={handleChallengePress}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Progress Summary */}
+        <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Your Progress
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {challenges.filter((c) => c.isStarted).length}
+              </div>
+              <div className="text-sm text-gray-600">Completed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {challenges.filter((c) => !c.isStarted).length}
+              </div>
+              <div className="text-sm text-gray-600">Remaining</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {challenges.filter((c) => c.isStarted).length * 50}
+              </div>
+              <div className="text-sm text-gray-600">Points Earned</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                {Math.round(
+                  (challenges.filter((c) => c.isStarted).length /
+                    challenges.length) *
+                    100
+                )}
+                %
+              </div>
+              <div className="text-sm text-gray-600">Progress</div>
+            </div>
+          </div>
         </div>
 
         {/* Empty State */}
@@ -91,7 +147,8 @@ const ChallengesView = ({ challenges, onChallengeUpdated }) => {
               No challenges found
             </h3>
             <p className="text-gray-500">
-              Try selecting a different category or check back later for new challenges.
+              Try selecting a different category or check back later for new
+              challenges.
             </p>
           </div>
         )}

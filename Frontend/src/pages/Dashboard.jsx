@@ -35,18 +35,22 @@ import ecoChallengeService from "../services/ecoChallengeService";
 const Dashboard = () => {
   const [userPoints, setUserPoints] = useState(null);
   const [userChallenges, setUserChallenges] = useState([]);
+  const [funChallengeStats, setFunChallengeStats] = useState(null);
+  const [completedFunChallenges, setCompletedFunChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadEcoData();
+    loadAllData();
   }, []);
 
-  const loadEcoData = async () => {
+  const loadAllData = async () => {
     try {
       setLoading(true);
-      const [pointsResponse, challengesResponse] = await Promise.all([
+      const [pointsResponse, challengesResponse, funStatsResponse, funChallengesResponse] = await Promise.all([
         ecoChallengeService.getUserPoints(),
-        ecoChallengeService.getUserChallenges("active")
+        ecoChallengeService.getUserChallenges("active"),
+        ecoChallengeService.getFunChallengeStats(),
+        ecoChallengeService.getUserFunChallenges("completed")
       ]);
 
       if (pointsResponse.success) {
@@ -55,8 +59,14 @@ const Dashboard = () => {
       if (challengesResponse.success) {
         setUserChallenges(challengesResponse.data.userChallenges);
       }
+      if (funStatsResponse.success) {
+        setFunChallengeStats(funStatsResponse.data.stats);
+      }
+      if (funChallengesResponse.success) {
+        setCompletedFunChallenges(funChallengesResponse.data.funChallenges);
+      }
     } catch (error) {
-      console.error("Failed to load eco data:", error);
+      console.error("Failed to load data:", error);
     } finally {
       setLoading(false);
     }
@@ -259,6 +269,87 @@ const Dashboard = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Fun Challenges Section */}
+        {funChallengeStats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-8"
+          >
+            <div className="bg-white rounded-lg p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <Star className="w-5 h-5 mr-2 text-yellow-600" />
+                  Fun Challenges Progress
+                </h2>
+                <a
+                  href="/eco-challenges"
+                  className="text-yellow-600 hover:text-yellow-800 font-medium text-sm"
+                >
+                  View All
+                </a>
+              </div>
+              
+              {/* Fun Challenge Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-green-600 mb-2">
+                    {funChallengeStats.totalCompleted || 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Completed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">
+                    {funChallengeStats.totalPoints || 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Points Earned</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600 mb-2">
+                    {funChallengeStats.categories?.length || 0}
+                  </div>
+                  <div className="text-sm text-gray-600">Categories</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-orange-600 mb-2">
+                    {funChallengeStats.totalCompleted > 0 ? Math.round((funChallengeStats.totalCompleted / 17) * 100) : 0}%
+                  </div>
+                  <div className="text-sm text-gray-600">Progress</div>
+                </div>
+              </div>
+
+              {/* Recent Completed Fun Challenges */}
+              {completedFunChallenges.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">Recently Completed</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {completedFunChallenges.slice(0, 3).map((challenge) => (
+                      <div key={challenge._id} className="border border-gray-200 rounded-lg p-4 bg-green-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-medium text-gray-900">
+                            {challenge.title}
+                          </h4>
+                          <span className="text-sm text-green-600">✅</span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-2">
+                          Category: {challenge.category}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Completed: {new Date(challenge.completedAt).toLocaleDateString()}
+                        </div>
+                        <div className="text-xs text-green-600 font-medium mt-2">
+                          +{challenge.pointsEarned} points
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

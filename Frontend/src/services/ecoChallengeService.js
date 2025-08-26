@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 class EcoChallengeService {
   // Get authentication headers
@@ -13,11 +14,10 @@ class EcoChallengeService {
     };
   }
 
-  // Get all available challenges
   async getAllChallenges(options = {}) {
     try {
       const { page = 1, limit = 10, category, difficulty, search } = options;
-      
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
@@ -28,7 +28,7 @@ class EcoChallengeService {
       if (search) params.append("search", search);
 
       const response = await fetch(`${API_BASE}/eco/challenges?${params}`);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
@@ -47,7 +47,7 @@ class EcoChallengeService {
   async getChallengeById(challengeId) {
     try {
       const response = await fetch(`${API_BASE}/eco/challenges/${challengeId}`);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
@@ -65,10 +65,13 @@ class EcoChallengeService {
   // Join a challenge
   async joinChallenge(challengeId) {
     try {
-      const response = await fetch(`${API_BASE}/eco/challenges/${challengeId}/join`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/challenges/${challengeId}/join`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -84,20 +87,24 @@ class EcoChallengeService {
     }
   }
 
-  // Complete daily challenge task
   async completeDailyTask(challengeId, impact = {}) {
     try {
-      const response = await fetch(`${API_BASE}/eco/challenges/${challengeId}/complete`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-        body: JSON.stringify({ impact }),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/challenges/${challengeId}/complete`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify({ impact }),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
         }
-        throw new Error(`Failed to complete daily task: ${response.statusText}`);
+        throw new Error(
+          `Failed to complete daily task: ${response.statusText}`
+        );
       }
 
       return await response.json();
@@ -110,15 +117,20 @@ class EcoChallengeService {
   // Get user's challenges
   async getUserChallenges(status = "active") {
     try {
-      const response = await fetch(`${API_BASE}/eco/user/challenges?status=${status}`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/user/challenges?status=${status}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
         }
-        throw new Error(`Failed to fetch user challenges: ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch user challenges: ${response.statusText}`
+        );
       }
 
       return await response.json();
@@ -152,8 +164,10 @@ class EcoChallengeService {
   // Get leaderboard
   async getLeaderboard(limit = 10) {
     try {
-      const response = await fetch(`${API_BASE}/eco/leaderboard?limit=${limit}`);
-      
+      const response = await fetch(
+        `${API_BASE}/eco/leaderboard?limit=${limit}`
+      );
+
       if (!response.ok) {
         throw new Error(`Failed to fetch leaderboard: ${response.statusText}`);
       }
@@ -168,10 +182,13 @@ class EcoChallengeService {
   // Mark challenge as favorite
   async toggleFavorite(challengeId) {
     try {
-      const response = await fetch(`${API_BASE}/eco/user/challenges/${challengeId}/favorite`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/user/challenges/${challengeId}/favorite`,
+        {
+          method: "PATCH",
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -190,15 +207,20 @@ class EcoChallengeService {
   // Get challenge progress
   async getChallengeProgress(challengeId) {
     try {
-      const response = await fetch(`${API_BASE}/eco/user/challenges/${challengeId}/progress`, {
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/user/challenges/${challengeId}/progress`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
         }
-        throw new Error(`Failed to fetch challenge progress: ${response.statusText}`);
+        throw new Error(
+          `Failed to fetch challenge progress: ${response.statusText}`
+        );
       }
 
       return await response.json();
@@ -211,10 +233,13 @@ class EcoChallengeService {
   // Abandon challenge
   async abandonChallenge(challengeId) {
     try {
-      const response = await fetch(`${API_BASE}/eco/user/challenges/${challengeId}/abandon`, {
-        method: "PATCH",
-        headers: this.getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_BASE}/eco/user/challenges/${challengeId}/abandon`,
+        {
+          method: "PATCH",
+          headers: this.getAuthHeaders(),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -226,6 +251,104 @@ class EcoChallengeService {
       return await response.json();
     } catch (error) {
       console.error("Eco challenge service error:", error);
+      throw error;
+    }
+  }
+
+  // Fun Challenge Methods
+  async completeFunChallenge(challengeId, title, category, impact = {}) {
+    try {
+      const response = await fetch(
+        `${API_BASE}/fun/challenges/${challengeId}/complete`,
+        {
+          method: "POST",
+          headers: this.getAuthHeaders(),
+          body: JSON.stringify({ title, category, impact }),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(
+          `Failed to complete fun challenge: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Fun challenge service error:", error);
+      throw error;
+    }
+  }
+
+  async getUserFunChallenges(status = "all") {
+    try {
+      const response = await fetch(
+        `${API_BASE}/fun/user/challenges?status=${status}`,
+        {
+          headers: this.getAuthHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(
+          `Failed to fetch fun challenges: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Fun challenge service error:", error);
+      throw error;
+    }
+  }
+
+  async getFunChallengeStats() {
+    try {
+      const response = await fetch(`${API_BASE}/fun/user/stats`, {
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(
+          `Failed to fetch fun challenge stats: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Fun challenge service error:", error);
+      throw error;
+    }
+  }
+
+  async resetFunChallenges() {
+    try {
+      const response = await fetch(`${API_BASE}/fun/user/challenges/reset`, {
+        method: "DELETE",
+        headers: this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(
+          `Failed to reset fun challenges: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Fun challenge service error:", error);
       throw error;
     }
   }

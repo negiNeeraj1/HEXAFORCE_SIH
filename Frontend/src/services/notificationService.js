@@ -2,13 +2,15 @@ const NOTIFICATION_API_BASE =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 class NotificationService {
-  // Check if backend is available
   async checkBackendHealth() {
     try {
-      const response = await fetch(`${NOTIFICATION_API_BASE.replace('/api', '')}/health`, {
-        method: 'GET',
-        timeout: 5000
-      });
+      const response = await fetch(
+        `${NOTIFICATION_API_BASE.replace("/api", "")}/health`,
+        {
+          method: "GET",
+          timeout: 5000,
+        }
+      );
       return response.ok;
     } catch (error) {
       return false;
@@ -26,7 +28,9 @@ class NotificationService {
       // Check backend health first
       const isBackendHealthy = await this.checkBackendHealth();
       if (!isBackendHealthy) {
-        throw new Error("Backend server is not available. Please try again later.");
+        throw new Error(
+          "Backend server is not available. Please try again later."
+        );
       }
 
       const queryString = new URLSearchParams(params).toString();
