@@ -1,11 +1,12 @@
 import React from 'react'
 import { useState } from 'react'
+import Challenges from './pages/Challenges'
 
 function App() {
 
   return (
     <>
-    <h1 className='bg-amber-700'>hello</h1>
+    <Challenges />
     </>
   )
 }
