@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-
+import dashboard from '../pages/DashboardLanding';
 const Signup = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
