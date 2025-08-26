@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ChallengeCard from "./ChallengeCard";
 import ChallengeDetailView from "./ChallengeDetailView";
+import ChallengeVerificationModal from "./ChallengeVerificationModal";
 
 const ChallengesView = ({
   challenges,
@@ -10,6 +11,8 @@ const ChallengesView = ({
 }) => {
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationChallenge, setVerificationChallenge] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   const handleChallengePress = (challenge) => {
@@ -22,8 +25,46 @@ const ChallengesView = ({
     setSelectedChallenge(null);
   };
 
+  const handleVerifyChallenge = (challenge) => {
+    setVerificationChallenge(challenge);
+    setShowVerificationModal(true);
+  };
+
+  const handleCloseVerificationModal = () => {
+    setShowVerificationModal(false);
+    setVerificationChallenge(null);
+  };
+
   const handleChallengeUpdated = (updatedChallenge) => {
     onChallengeUpdated(updatedChallenge);
+  };
+
+  const handleVerificationSuccess = async (image, verificationResult) => {
+    try {
+      // Here you would typically call your API to complete the challenge
+      // For now, we'll just close the modal and update the UI
+      console.log("Challenge verified successfully:", {
+        challenge: verificationChallenge,
+        image,
+        verificationResult,
+      });
+
+      // Update the challenge as completed
+      const updatedChallenge = {
+        ...verificationChallenge,
+        isStarted: true,
+        completedAt: new Date(),
+      };
+
+      onChallengeUpdated(updatedChallenge);
+      handleCloseVerificationModal();
+
+      // Show success message
+      alert(`Challenge completed! +${verificationChallenge.points} points`);
+    } catch (error) {
+      console.error("Failed to complete challenge:", error);
+      alert("Failed to complete challenge. Please try again.");
+    }
   };
 
   const filteredChallenges =
@@ -96,6 +137,7 @@ const ChallengesView = ({
                 key={challenge.id}
                 challenge={challenge}
                 onPress={handleChallengePress}
+                onVerifyChallenge={handleVerifyChallenge}
               />
             ))}
           </div>
@@ -160,6 +202,16 @@ const ChallengesView = ({
           challenge={selectedChallenge}
           onChallengeUpdated={handleChallengeUpdated}
           onClose={handleCloseModal}
+        />
+      )}
+
+      {/* Challenge Verification Modal */}
+      {showVerificationModal && verificationChallenge && (
+        <ChallengeVerificationModal
+          challenge={verificationChallenge}
+          isOpen={showVerificationModal}
+          onClose={handleCloseVerificationModal}
+          onVerificationSuccess={handleVerificationSuccess}
         />
       )}
     </div>

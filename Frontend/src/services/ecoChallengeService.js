@@ -352,6 +352,52 @@ class EcoChallengeService {
       throw error;
     }
   }
+
+  // Complete challenge with photo verification
+  async completeChallengeWithVerification(
+    challengeId,
+    challengeTitle,
+    category,
+    verificationData
+  ) {
+    try {
+      const formData = new FormData();
+      formData.append("challengeId", challengeId);
+      formData.append("title", challengeTitle);
+      formData.append("category", category);
+      formData.append("verificationData", JSON.stringify(verificationData));
+
+      // Add the photo if it exists
+      if (verificationData.photo) {
+        formData.append("photo", verificationData.photo);
+      }
+
+      const response = await fetch(
+        `${API_BASE}/fun/challenges/${challengeId}/complete-verified`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: this.getAuthHeaders().Authorization,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
+        throw new Error(
+          `Failed to complete verified challenge: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Verified challenge completion error:", error);
+      throw error;
+    }
+  }
 }
 
 const ecoChallengeService = new EcoChallengeService();
