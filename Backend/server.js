@@ -44,7 +44,6 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000, // 5 second timeout
       socketTimeoutMS: 45000, // 45 second timeout
-      // Removed deprecated options: bufferMaxEntries, bufferCommands
     };
 
     await mongoose.connect(mongoUri, connectionOptions);
@@ -79,6 +78,8 @@ const studyMaterialRoutes = require("./routes/studyMaterialRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const quizAttemptRoutes = require("./routes/quizAttemptRoutes");
+const ecoChallengeRoutes = require("./routes/ecoChallengeRoutes");
+const funChallengeRoutes = require("./routes/funChallengeRoutes");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 // Load environment variables
@@ -90,12 +91,12 @@ connectDB();
 
 // CORS configuration to allow both frontends
 const allowedOrigins = [
-  "http://localhost:3000", // Main frontend
-  "http://localhost:3001", // Admin frontend
-  "http://localhost:5173", // Vite dev server
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:5173",
   process.env.FRONTEND_URL,
   process.env.ADMIN_URL,
-].filter(Boolean); // Remove undefined values
+].filter(Boolean);
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -148,14 +149,47 @@ app.get("/health", (req, res) => {
     environment: process.env.NODE_ENV || "development",
   });
 });
+
+// Database health check
+app.get("/db-health", async (req, res) => {
+  try {
+    const mongoose = require("mongoose");
+    const dbState = mongoose.connection.readyState;
+    const states = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting",
+    };
+
+    res.status(200).json({
+      success: true,
+      status: "ok",
+      database: states[dbState] || "unknown",
+      message: "Database connection status checked",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: "error",
+      error: "Database health check failed",
+      details: error.message,
+    });
+  }
+});
+
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/study-materials", studyMaterialRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/quiz-attempts", quizAttemptRoutes);
+app.use("/api/eco", ecoChallengeRoutes);
+app.use("/api/fun", funChallengeRoutes);
 
-// Health check route
+// API Health check route
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -164,35 +198,6 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
     version: "1.0.0",
     environment: process.env.NODE_ENV || "development",
-  });
-});
-
-// Debug JWT route
-app.get("/api/debug/jwt", (req, res) => {
-  const authHeader = req.headers.authorization;
-  const jwt = require("jsonwebtoken");
-
-  res.json({
-    success: true,
-    debug: {
-      jwtSecret: process.env.JWT_SECRET
-        ? "SET (length: " + process.env.JWT_SECRET.length + ")"
-        : "NOT SET",
-      authHeader: authHeader ? "PROVIDED" : "MISSING",
-      token: authHeader ? authHeader.substring(0, 20) + "..." : "NO TOKEN",
-      serverTime: new Date().toISOString(),
-      // Try to decode token without verification to see structure
-      tokenPayload: authHeader
-        ? (() => {
-            try {
-              const token = authHeader.split(" ")[1];
-              return jwt.decode(token); // Decode without verification
-            } catch (e) {
-              return "INVALID_FORMAT";
-            }
-          })()
-        : "NO_TOKEN",
-    },
   });
 });
 
