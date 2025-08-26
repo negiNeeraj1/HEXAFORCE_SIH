@@ -62,7 +62,7 @@ class EcoChallengeService {
     }
   }
 
-  // Join a challenge
+  // Join a challenges
   async joinChallenge(challengeId) {
     try {
       const response = await fetch(
