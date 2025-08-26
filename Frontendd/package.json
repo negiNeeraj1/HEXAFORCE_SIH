@@ -11,13 +11,20 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
+    "framer-motion": "^12.23.12",
+    "lottie-react": "^2.4.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+<<<<<<< HEAD
+    "react-hook-form": "^7.62.0",
+    "tailwindcss": "^4.1.12"
+=======
     "react-icons": "^5.5.0",
     "react-tsparticles": "^2.12.2",
     "tailwindcss": "^4.1.12",
     "tsparticles": "^3.9.1",
     "tsparticles-slim": "^2.12.0"
+>>>>>>> 80b1766b0ae8f22212b2e1091060d36376520c61
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
