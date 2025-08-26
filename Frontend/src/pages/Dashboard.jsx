@@ -35,10 +35,10 @@ const Dashboard = () => {
   ];
 
   const subjectScores = [
-    { subject: "Physics", score: 85 },
-    { subject: "Chemistry", score: 78 },
-    { subject: "Biology", score: 92 },
-    { subject: "Math", score: 88 },
+    { subject: "Climate Change", score: 85 },
+    { subject: "Biodiversity", score: 78 },
+    { subject: "Renewable Energy", score: 92 },
+    { subject: "Waste Management", score: 88 },
   ];
 
   return (
@@ -50,9 +50,9 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Eco Dashboard</h1>
             <p className="text-gray-600 mt-1">
-              Track your quiz performance and learning progress
+              Track your environmental knowledge and sustainability progress
             </p>
           </div>
           <div className="flex items-center space-x-4">
@@ -60,9 +60,9 @@ const Dashboard = () => {
               href="/quizzes"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200"
             >
-              Take Quiz
+              Take Eco Quiz
             </motion.a>
             <motion.a
               href="/quiz-history"
@@ -114,17 +114,17 @@ const Dashboard = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AchievementCard
-              title="Quiz Master"
+              title="Eco Warrior"
               progress={75}
-              icon={<Trophy className="text-orange-500" />}
+              icon={<Trophy className="text-green-500" />}
             />
             <AchievementCard
-              title="Study Streak"
+              title="Sustainability Champion"
               progress={90}
               icon={<Target className="text-blue-500" />}
             />
             <AchievementCard
-              title="Subject Expert"
+              title="Climate Expert"
               progress={60}
               icon={<Award className="text-purple-500" />}
             />

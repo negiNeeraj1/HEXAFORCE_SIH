@@ -1,12 +1,15 @@
 // Quiz Attempt Service for managing quiz history and attempts
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "https://aistudy-xfxe.onrender.com/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 class QuizAttemptService {
   // Get authentication headers
   getAuthHeaders() {
     const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found. Please log in again.");
+    }
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -52,6 +55,9 @@ class QuizAttemptService {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Authentication failed. Please log in again.");
+        }
         throw new Error(`Failed to fetch quiz history: ${response.statusText}`);
       }
 

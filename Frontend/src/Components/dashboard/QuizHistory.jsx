@@ -31,11 +31,13 @@ const QuizHistory = ({ showAll = false, limit = 5 }) => {
 
   useEffect(() => {
     loadQuizHistory();
-  }, [currentPage, filters]);
+  }, [currentPage, filters, limit]);
 
   const loadQuizHistory = async () => {
     try {
       setLoading(true);
+      setError("");
+
       const options = {
         page: currentPage,
         limit: showAll ? 10 : limit,
@@ -50,17 +52,101 @@ const QuizHistory = ({ showAll = false, limit = 5 }) => {
       const response = await quizAttemptService.getUserQuizHistory(options);
 
       if (response.success) {
+        console.log("Raw response data:", response.data);
+        console.log("Original attempts count:", response.data.attempts.length);
+        console.log("Raw attempts:", response.data.attempts);
+
+        // Deduplicate attempts to prevent showing the same quiz multiple times
+        const uniqueAttempts = response.data.attempts.filter(
+          (attempt, index, self) => {
+            // Check by _id first (most reliable)
+            const idIndex = self.findIndex((t) => t._id === attempt._id);
+            if (index !== idIndex) {
+              console.log(
+                `Duplicate found by ID: ${attempt._id} at index ${index}`
+              );
+              return false;
+            }
+
+            // Also check for exact duplicates by comparing key fields
+            const exactDuplicateIndex = self.findIndex(
+              (t) =>
+                t._id === attempt._id &&
+                t.subject?.name === attempt.subject?.name &&
+                t.difficulty?.id === attempt.difficulty?.id &&
+                t.score?.correct === attempt.score?.correct &&
+                t.score?.total === attempt.score?.total &&
+                t.completedAt === attempt.completedAt
+            );
+
+            if (index !== exactDuplicateIndex) {
+              console.log(`Exact duplicate found at index ${index}`);
+              return false;
+            }
+
+            return true;
+          }
+        );
+
+        console.log("After deduplication count:", uniqueAttempts.length);
+        console.log("Unique attempts:", uniqueAttempts);
+
+        // Apply limit after deduplication to ensure we show exactly the requested number
+        const limitedAttempts = showAll
+          ? uniqueAttempts
+          : uniqueAttempts.slice(0, limit);
+
+        console.log("Final limited attempts count:", limitedAttempts.length);
+        console.log("Limit requested:", limit);
+        console.log("Final attempts to display:", limitedAttempts);
+
+        // Additional safety check - ensure we don't have more items than the limit
+        if (!showAll && limitedAttempts.length > limit) {
+          console.warn(
+            `Warning: Got ${limitedAttempts.length} items but limit is ${limit}. Truncating.`
+          );
+          limitedAttempts.splice(limit);
+        }
+
         setQuizHistory(
-          response.data.attempts.map((attempt) =>
+          limitedAttempts.map((attempt) =>
             quizAttemptService.formatQuizAttempt(attempt)
           )
         );
+
+        // Final safety check - if we still have more items than expected, force the limit
+        if (!showAll && limitedAttempts.length > limit) {
+          console.error(
+            `CRITICAL: Still have ${limitedAttempts.length} items after deduplication. Forcing limit.`
+          );
+          const forcedLimited = limitedAttempts.slice(0, limit);
+          setQuizHistory(
+            forcedLimited.map((attempt) =>
+              quizAttemptService.formatQuizAttempt(attempt)
+            )
+          );
+        }
+
         setTotalPages(response.data.pagination.totalPages);
         setError("");
       }
     } catch (err) {
       console.error("Failed to load quiz history:", err);
-      setError("Failed to load quiz history");
+      
+      // Provide more user-friendly error messages
+      let errorMessage = "Failed to load quiz history";
+      
+      if (err.message.includes("Backend server is not available")) {
+        errorMessage = "Server is currently unavailable. Please try again later.";
+      } else if (err.message.includes("Authentication failed")) {
+        errorMessage = "Your session has expired. Please log in again.";
+      } else if (err.message.includes("No authentication token found")) {
+        errorMessage = "Please log in to view your quiz history.";
+      } else if (err.message.includes("Failed to fetch")) {
+        errorMessage = "Unable to connect to the server. Please check your internet connection.";
+      }
+      
+      setError(errorMessage);
       setQuizHistory([]);
     } finally {
       setLoading(false);
@@ -187,13 +273,21 @@ const QuizHistory = ({ showAll = false, limit = 5 }) => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Subjects</option>
-                <option value="Data Structures & Algorithms">
-                  Data Structures & Algorithms
+                <option value="Climate Change & Global Warming">
+                  Climate Change & Global Warming
                 </option>
-                <option value="Web Development">Web Development</option>
-                <option value="Machine Learning">Machine Learning</option>
-                <option value="Operating Systems">Operating Systems</option>
-                <option value="Computer Networks">Computer Networks</option>
+                <option value="Biodiversity & Ecosystems">
+                  Biodiversity & Ecosystems
+                </option>
+                <option value="Renewable Energy Sources">
+                  Renewable Energy Sources
+                </option>
+                <option value="Waste Management & Recycling">
+                  Waste Management & Recycling
+                </option>
+                <option value="Water Conservation & Pollution">
+                  Water Conservation & Pollution
+                </option>
               </select>
             </div>
 
@@ -246,7 +340,7 @@ const QuizHistory = ({ showAll = false, limit = 5 }) => {
       <div className="space-y-4">
         {quizHistory.map((attempt, index) => (
           <motion.div
-            key={attempt._id}
+            key={`${attempt._id}-${attempt.completedAt}-${index}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}

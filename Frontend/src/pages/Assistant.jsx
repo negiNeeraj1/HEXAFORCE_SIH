@@ -4,7 +4,7 @@ import {
   Send,
   Bot,
   Sparkles,
-  Brain,
+  Leaf,
   Clock,
   Book,
   ChevronDown,
@@ -34,7 +34,7 @@ const TypingIndicator = () => (
           delay,
           ease: "easeInOut",
         }}
-        className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full shadow-sm"
+        className="w-3 h-3 bg-gradient-to-r from-green-400 to-blue-400 rounded-full shadow-sm"
       />
     ))}
   </div>
@@ -48,41 +48,32 @@ const WelcomeMessage = () => (
     className="text-center py-12 px-6"
   >
     <motion.div
-      animate={{
-        rotate: [0, 10, -10, 0],
-        scale: [1, 1.1, 1],
-      }}
-      transition={{
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
+      animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
       className="mb-6"
     >
-      <Bot className="w-16 h-16 mx-auto text-blue-500 drop-shadow-lg" />
+      <Bot className="w-16 h-16 mx-auto text-green-500 drop-shadow-lg" />
     </motion.div>
 
     <h3 className="text-2xl font-bold text-gray-800 mb-4">
-      Welcome to your AI Study Assistant! 🎓
+      Welcome to your AI Eco Assistant! 🌍
     </h3>
 
     <p className="text-gray-600 mb-6 max-w-md mx-auto leading-relaxed">
-      I'm here to help you with your studies. Ask me anything about exam
-      preparation, study techniques, or any academic topic you'd like to
-      explore!
+      Ask me anything about climate change, sustainability, biodiversity, or how
+      to take eco-friendly actions in daily life.
     </p>
 
     <div className="flex flex-wrap justify-center gap-3">
       {[
-        { icon: <Brain className="w-4 h-4" />, text: "Smart Learning" },
-        { icon: <Sparkles className="w-4 h-4" />, text: "Instant Help" },
-        { icon: <Zap className="w-4 h-4" />, text: "Quick Answers" },
+        { icon: <Leaf className="w-4 h-4" />, text: "Eco Guidance" },
+        { icon: <Sparkles className="w-4 h-4" />, text: "Quick Facts" },
+        { icon: <Zap className="w-4 h-4" />, text: "Action Tips" },
       ].map((feature, index) => (
         <motion.div
           key={index}
           whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 
-                     rounded-full text-sm font-medium text-gray-700 shadow-sm"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-blue-100 rounded-full text-sm font-medium text-gray-700 shadow-sm"
         >
           {feature.icon}
           {feature.text}
@@ -104,34 +95,24 @@ const Assistant = () => {
 
   const faqQuestions = [
     {
-      text: "How do I prepare for exams effectively?",
-      icon: <Brain className="w-4 h-4" />,
-      category: "Study Tips",
+      text: "What is climate change and how does it affect India?",
+      icon: <Leaf className="w-4 h-4" />,
+      category: "Climate",
     },
     {
-      text: "What are the best study techniques for retention?",
-      icon: <Book className="w-4 h-4" />,
-      category: "Learning",
+      text: "How can I reduce my carbon footprint at school/home?",
+      icon: <Leaf className="w-4 h-4" />,
+      category: "Lifestyle",
     },
     {
-      text: "Can you explain complex topics simply?",
-      icon: <Sparkles className="w-4 h-4" />,
-      category: "Understanding",
+      text: "What are the best waste segregation practices?",
+      icon: <Leaf className="w-4 h-4" />,
+      category: "Waste",
     },
     {
-      text: "How to manage study time efficiently?",
-      icon: <Clock className="w-4 h-4" />,
-      category: "Time Management",
-    },
-    {
-      text: "Help me with programming concepts",
-      icon: <Zap className="w-4 h-4" />,
-      category: "Programming",
-    },
-    {
-      text: "Create a study schedule for me",
-      icon: <Settings className="w-4 h-4" />,
-      category: "Planning",
+      text: "Explain biodiversity and why it matters.",
+      icon: <Leaf className="w-4 h-4" />,
+      category: "Biodiversity",
     },
   ];
 
