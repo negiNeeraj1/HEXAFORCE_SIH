@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-const StreamingMessage = ({ 
-  text, 
-  isStreaming = false, 
+const StreamingMessage = ({
+  text,
+  isStreaming = false,
   isError = false,
-  onStreamingComplete = () => {} // Callback prop for when streaming finishes
+  onStreamingComplete = () => {}, // Callback prop for when streaming finishes
 }) => {
   const [displayedText, setDisplayedText] = useState("");
   const messageRef = useRef(null);
@@ -20,18 +20,18 @@ const StreamingMessage = ({
     }
 
     // Split text into words to stream word-by-word
-    const words = text.split(/(\s+)/); 
+    const words = text.split(/(\s+)/);
     let wordIndex = 0;
 
     // Reset the text when a new stream begins
-    setDisplayedText(""); 
+    setDisplayedText("");
 
     const interval = setInterval(() => {
       if (wordIndex < words.length) {
         // Append the next word (or space/newline)
         setDisplayedText((prev) => prev + words[wordIndex]);
         wordIndex++;
-        
+
         // Auto-scroll as text appears
         setTimeout(() => {
           if (messageRef.current) {
@@ -46,12 +46,11 @@ const StreamingMessage = ({
         clearInterval(interval);
         onStreamingComplete(); // Notify the parent component
       }
-    }, 50); // Adjust this value to change typing speed
+    }, 50);
 
     return () => clearInterval(interval); // Cleanup on unmount or re-render
   }, [text, isStreaming, onStreamingComplete]);
 
-  // Function to format text with bold text, emojis, and proper paragraphs
   const formatText = (text) => {
     if (!text) return "";
 
@@ -144,7 +143,7 @@ const StreamingMessage = ({
     });
   };
 
-  const messageClasses = isError 
+  const messageClasses = isError
     ? "bg-gradient-to-r from-red-100 to-yellow-100 border border-red-200 text-red-800"
     : "bg-gradient-to-r from-gray-100 to-blue-50 text-gray-800";
 

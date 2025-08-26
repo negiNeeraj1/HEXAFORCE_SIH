@@ -24,7 +24,7 @@ exports.getDashboardStats = async (req, res) => {
 
     // Calculate some basic metrics
     const studentUsers = totalUsers - adminUsers;
-    const userGrowthRate = 15; // Mock data - you can calculate this properly later
+    const userGrowthRate = 15;
 
     const stats = {
       overview: {
@@ -263,7 +263,7 @@ exports.listUsers = async (req, res) => {
     // Format users data for frontend
     const formattedUsers = users.map((user) => ({
       _id: user._id,
-      id: user._id, // Add id field for compatibility
+      id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
@@ -353,7 +353,7 @@ exports.updateUser = async (req, res) => {
   try {
     const { id } = req.params;
     const update = { ...req.body };
-    delete update.password; // keep password unchanged here
+    delete update.password;
     const user = await User.findByIdAndUpdate(id, update, { new: true }).select(
       "-password"
     );

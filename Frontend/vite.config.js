@@ -4,7 +4,7 @@ import path from "path";
 
 export default defineConfig({
   plugins: [
-    react(), // ✅ Add React support
+    react(),
   ],
   resolve: {
     alias: {
@@ -12,12 +12,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000, // Client Frontend on port 3000
+    port: 3000,
     proxy: {
-      "/api": "http://localhost:5000", // Local Backend
+      "/api": "http://localhost:5000",
     },
   },
-  base: "/", // Changed for Vercel compatibility
+  base: "/",
   build: {
     outDir: "dist",
     rollupOptions: {

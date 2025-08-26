@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+<<<<<<< HEAD
 import dashboard from '../pages/DashboardLanding';
+=======
+//signup page
+>>>>>>> 9b18463564448ed990d310c1f3af9f7c647764db
 const Signup = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -25,13 +29,13 @@ const Signup = () => {
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => password.length >= 8;
   const validateName = (name) => name.trim().length > 0;
-
+//handling hanges
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormError("");
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
-
+//handling the contet 
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -183,7 +187,7 @@ const Signup = () => {
                 {errors.password}
               </div>
             )}
-          </div>
+          </div> 
           {formError && (
             <div className="text-red-600 text-sm flex items-center animate-slideDown">
               <XCircle className="h-4 w-4 mr-1" />

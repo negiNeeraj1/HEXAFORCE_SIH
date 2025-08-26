@@ -3,10 +3,7 @@ const router = express.Router();
 const { requireAdmin } = require("../middleware/authImproved");
 const adminController = require("../controllers/adminController");
 
-/**
- * 👑 ADMIN ROUTES
- * All routes require admin authentication
- */
+
 
 // Apply admin authentication to all routes
 router.use(requireAdmin);
@@ -15,7 +12,7 @@ router.use(requireAdmin);
 router.get("/dashboard/stats", adminController.getDashboardStats);
 router.get("/analytics", adminController.getAnalyticsData);
 
-// System Health Route (requires auth)
+
 router.get("/system/health", adminController.getSystemHealth);
 
 // User Statistics
