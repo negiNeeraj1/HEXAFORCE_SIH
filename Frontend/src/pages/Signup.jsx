@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+//import react from the react app
 import {
   Eye,
   EyeOff,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-//signup page
+//signup page with intractive desizn
 const Signup = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
@@ -25,14 +26,18 @@ const Signup = () => {
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => password.length >= 8;
   const validateName = (name) => name.trim().length > 0;
+<<<<<<< HEAD
   const validateSchool = (school) => school.trim().length > 0;
 //handling hanges
+=======
+//handling hanges 
+>>>>>>> 8c1657e5b9cf9b75281ce9c4326e246615067762
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormError("");
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
-//handling the contet 
+//handling the content
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -263,3 +268,4 @@ const Signup = () => {
 };
 
 export default Signup;
+//export default signup page

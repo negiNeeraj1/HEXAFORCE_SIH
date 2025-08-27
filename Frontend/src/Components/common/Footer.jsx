@@ -6,7 +6,7 @@ const Footer = () => (
       <div className="text-gray-700 text-center md:text-left text-sm">
         © 2025 Study AI. Built by{" "}
         <span className="font-semibold text-blue-700">Neeraj Singh Negi</span>.
-        All rights reserved.
+        All rights reserved!
       </div>
       <div className="flex items-center space-x-4 mt-2 md:mt-0">
         
