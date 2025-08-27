@@ -234,3 +234,24 @@ exports.checkUsage = async (req, res) => {
     res.status(500).json({ error: "Failed to check API usage" });
   }
 };
+
+// Image Analysis function
+exports.analyzeImage = async (req, res) => {
+  try {
+    // For now, return a placeholder response
+    // You can implement actual image analysis later
+    res.json({
+      success: true,
+      message: "Image analysis endpoint is available",
+      note: "Actual image analysis functionality needs to be implemented",
+      availableFeatures: [
+        "Image upload",
+        "Basic image processing",
+        "AI-powered analysis (coming soon)",
+      ],
+    });
+  } catch (error) {
+    console.error("Image analysis error:", error);
+    res.status(500).json({ error: "Failed to analyze image" });
+  }
+};

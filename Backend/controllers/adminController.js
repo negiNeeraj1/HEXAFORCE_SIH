@@ -4,15 +4,6 @@ const {
   sendError,
   AppError,
 } = require("../middleware/errorHandler");
-
-/**
- * 👑 ADMIN CONTROLLER
- * Handles admin dashboard and analytics operations
- */
-
-/**
- * Get dashboard statistics
- */
 exports.getDashboardStats = async (req, res) => {
   try {
     // Basic dashboard stats using your existing User model
@@ -34,7 +25,7 @@ exports.getDashboardStats = async (req, res) => {
         studentUsers,
         userGrowthRate,
       },
-      // Mock data for charts - replace with real data from your database
+
       userGrowth: [
         {
           month: "Jan",
@@ -268,7 +259,9 @@ exports.listUsers = async (req, res) => {
       email: user.email,
       role: user.role,
       status: user.status || "Active",
-      lastActive: user.lastActive ? new Date(user.lastActive).toLocaleDateString() : "Never",
+      lastActive: user.lastActive
+        ? new Date(user.lastActive).toLocaleDateString()
+        : "Never",
       averageScore: user.averageScore || 0,
       totalQuizzes: user.totalQuizzes || 0,
       studentsReached: user.studentsReached || 0,
@@ -299,23 +292,26 @@ exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) return sendError(res, "User not found", 404, "USER_NOT_FOUND");
-    
+
     // Format user data for frontend
     const formattedUser = {
       _id: user._id,
       id: user._id,
       name: user.name,
+      school: user.school,
       email: user.email,
       role: user.role,
       status: user.status || "Active",
-      lastActive: user.lastActive ? new Date(user.lastActive).toLocaleDateString() : "Never",
+      lastActive: user.lastActive
+        ? new Date(user.lastActive).toLocaleDateString()
+        : "Never",
       averageScore: user.averageScore || 0,
       totalQuizzes: user.totalQuizzes || 0,
       studentsReached: user.studentsReached || 0,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
-    
+
     return sendSuccess(res, formattedUser, "User fetched");
   } catch (error) {
     console.error("🚨 Get user by id error:", error);
@@ -325,18 +321,19 @@ exports.getUserById = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { name, email, password, role = "user" } = req.body;
-    if (!name || !email || !password)
+    const { name, school, email, password, role = "user" } = req.body;
+    if (!name || !school || !email || !password)
       return sendError(res, "Missing required fields", 400, "MISSING_FIELDS");
     const exists = await User.findOne({ email });
     if (exists)
       return sendError(res, "Email already in use", 400, "EMAIL_EXISTS");
-    const user = await User.create({ name, email, password, role });
+    const user = await User.create({ name, school, email, password, role });
     return sendSuccess(
       res,
       {
         id: user._id,
         name: user.name,
+        school: user.school,
         email: user.email,
         role: user.role,
       },
@@ -374,5 +371,41 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     console.error("🚨 Delete user error:", error);
     return sendError(res, "Failed to delete user", 500, "DELETE_USER_ERROR");
+  }
+};
+
+// Get college statistics
+exports.getCollegeStats = async (req, res) => {
+  try {
+    const collegeStats = await User.aggregate([
+      {
+        $group: {
+          _id: "$school",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    // Transform data for frontend consumption
+    const formattedStats = collegeStats.map((stat) => ({
+      college: stat._id,
+      students: stat.count,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedStats,
+      totalColleges: collegeStats.length,
+      totalStudents: collegeStats.reduce((sum, stat) => sum + stat.count, 0),
+    });
+  } catch (error) {
+    console.error("Error fetching college stats:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch college statistics",
+    });
   }
 };

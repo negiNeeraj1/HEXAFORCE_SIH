@@ -1,40 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const { auth } = require("../middleware/auth");
+const {
+  generateQuiz,
+  chatWithAssistant,
+  checkUsage,
+  analyzeImage,
+} = require("../controllers/aiController");
 
-// Test endpoint to check if the route is working
-router.get("/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "AI routes are working!",
-    status: "Dependencies not installed yet",
-    nextSteps: [
-      "npm install @google-cloud/vision multer",
-      "Add GOOGLE_VISION_API_KEY to .env file",
-      "Restart the server",
-    ],
-  });
-});
+// AI Quiz Generation (Protected route)
+router.post("/generate-quiz", auth, generateQuiz);
 
-// Temporary placeholder endpoint when dependencies are not available
-router.post("/analyze-image", auth, (req, res) => {
-  res.json({
-    success: false,
-    message:
-      "Image analysis not available yet - dependencies need to be installed",
-    dependencies: {
-      multer: false,
-      visionClient: false,
-      googleVisionApiKey: !!process.env.GOOGLE_VISION_API_KEY,
-      googleCredentials: !!process.env.GOOGLE_APPLICATION_CREDENTIALS,
-    },
-    nextSteps: [
-      "npm install @google-cloud/vision multer",
-      "Add GOOGLE_VISION_API_KEY to .env file",
-      "Restart the server",
-    ],
-  });
-});
+// AI Assistant Chat (Protected route)
+router.post("/chat", auth, chatWithAssistant);
+
+// Check API Usage (Protected route)
+router.get("/usage", auth, checkUsage);
+
+// Image Analysis (Protected route)
+router.post("/analyze-image", auth, analyzeImage);
 
 // Health check endpoint
 router.get("/health", (req, res) => {
@@ -42,7 +26,26 @@ router.get("/health", (req, res) => {
     success: true,
     message: "AI routes are healthy",
     timestamp: new Date().toISOString(),
-    status: "Dependencies not installed",
+    availableEndpoints: [
+      "POST /api/ai/generate-quiz - Generate quiz questions",
+      "POST /api/ai/chat - Chat with AI assistant",
+      "GET /api/ai/usage - Check API usage",
+      "POST /api/ai/analyze-image - Analyze images",
+    ],
+  });
+});
+
+// Test endpoint to check if the route is working
+router.get("/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "AI routes are working!",
+    availableFeatures: [
+      "Quiz Generation",
+      "AI Assistant Chat",
+      "API Usage Monitoring",
+      "Image Analysis",
+    ],
   });
 });
 

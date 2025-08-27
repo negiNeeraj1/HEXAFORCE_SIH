@@ -1,5 +1,8 @@
 const QuizAttempt = require("../models/QuizAttempt");
 const User = require("../models/User");
+const UserPoints = require("../models/UserPoints");
+// Remove circular dependency - import badgeController only when needed
+// const badgeController = require("./badgeController");
 
 // Create a new quiz attempt
 exports.createQuizAttempt = async (req, res) => {
@@ -71,6 +74,13 @@ exports.createQuizAttempt = async (req, res) => {
 
     await quizAttempt.save();
 
+    // Calculate and award points based on performance and difficulty
+    const pointsEarned = await awardQuizPoints(userId, quizAttempt);
+    
+    // Check and award badges
+    const badgeController = require("./badgeController");
+    const { newBadges } = await badgeController.checkAndAwardBadges(userId);
+
     // Update user statistics
     await updateUserStats(userId);
 
@@ -82,6 +92,8 @@ exports.createQuizAttempt = async (req, res) => {
         score: quizAttempt.score,
         passed: quizAttempt.passed,
         insights: quizAttempt.getPerformanceInsights(),
+        pointsEarned,
+        newBadges,
       },
     });
   } catch (error) {
@@ -324,6 +336,76 @@ const getPerformanceInsights = (attempt) => {
   }
 
   return insights;
+};
+
+// Helper function to award points for quiz completion
+const awardQuizPoints = async (userId, quizAttempt) => {
+  try {
+    let userPoints = await UserPoints.findOne({ userId });
+    if (!userPoints) {
+      userPoints = new UserPoints({ userId });
+    }
+
+    // Base points based on difficulty
+    let basePoints = 0;
+    switch (quizAttempt.difficulty.id) {
+      case "beginner":
+        basePoints = 10;
+        break;
+      case "intermediate":
+        basePoints = 25;
+        break;
+      case "advanced":
+        basePoints = 50;
+        break;
+      default:
+        basePoints = 15;
+    }
+
+    // Bonus points based on performance
+    let bonusPoints = 0;
+    if (quizAttempt.score.percentage >= 90) {
+      bonusPoints = Math.floor(basePoints * 0.5); // 50% bonus for excellent performance
+    } else if (quizAttempt.score.percentage >= 80) {
+      bonusPoints = Math.floor(basePoints * 0.3); // 30% bonus for good performance
+    } else if (quizAttempt.score.percentage >= 70) {
+      bonusPoints = Math.floor(basePoints * 0.1); // 10% bonus for passing performance
+    }
+
+    // Speed bonus (if completed quickly)
+    let speedBonus = 0;
+    const timePerQuestion = quizAttempt.timePerQuestion || 60; // seconds
+    if (timePerQuestion < 30) {
+      speedBonus = Math.floor(basePoints * 0.2); // 20% bonus for fast completion
+    } else if (timePerQuestion < 60) {
+      speedBonus = Math.floor(basePoints * 0.1); // 10% bonus for moderate speed
+    }
+
+    const totalPoints = basePoints + bonusPoints + speedBonus;
+
+    // Add points to user
+    userPoints.addPoints(
+      totalPoints,
+      "quiz_completion",
+      `Completed ${quizAttempt.subject.name} quiz (${quizAttempt.difficulty.name}) with ${quizAttempt.score.percentage}% score`,
+      quizAttempt._id
+    );
+
+    // Update quiz-related stats
+    userPoints.stats.challengesCompleted += 1;
+
+    await userPoints.save();
+
+    return {
+      base: basePoints,
+      bonus: bonusPoints,
+      speed: speedBonus,
+      total: totalPoints,
+    };
+  } catch (error) {
+    console.error("Error awarding quiz points:", error);
+    return { base: 0, bonus: 0, speed: 0, total: 0 };
+  }
 };
 
 // Helper function to calculate learning streak

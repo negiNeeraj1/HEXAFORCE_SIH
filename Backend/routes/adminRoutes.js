@@ -3,8 +3,6 @@ const router = express.Router();
 const { requireAdmin } = require("../middleware/authImproved");
 const adminController = require("../controllers/adminController");
 
-
-
 // Apply admin authentication to all routes
 router.use(requireAdmin);
 
@@ -12,11 +10,11 @@ router.use(requireAdmin);
 router.get("/dashboard/stats", adminController.getDashboardStats);
 router.get("/analytics", adminController.getAnalyticsData);
 
-
 router.get("/system/health", adminController.getSystemHealth);
 
 // User Statistics
 router.get("/users/stats", adminController.getUserStats);
+router.get("/college/stats", adminController.getCollegeStats);
 
 // User Management
 router.get("/users", adminController.listUsers);

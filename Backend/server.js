@@ -77,9 +77,11 @@ const aiRoutes = require("./routes/aiRoutes");
 const studyMaterialRoutes = require("./routes/studyMaterialRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const badgeRoutes = require("./routes/badgeRoutes");
 const quizAttemptRoutes = require("./routes/quizAttemptRoutes");
 const ecoChallengeRoutes = require("./routes/ecoChallengeRoutes");
 const funChallengeRoutes = require("./routes/funChallengeRoutes");
+const debugRoutes = require("./routes/debugRoutes");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 // Load environment variables
@@ -185,9 +187,47 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/study-materials", studyMaterialRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/badges", badgeRoutes);
 app.use("/api/quiz-attempts", quizAttemptRoutes);
 app.use("/api/eco", ecoChallengeRoutes);
 app.use("/api/fun", funChallengeRoutes);
+app.use("/api/debug", debugRoutes);
+
+// Public college statistics route
+app.get("/api/college/stats", async (req, res) => {
+  try {
+    const User = require("./models/User");
+    const collegeStats = await User.aggregate([
+      {
+        $group: {
+          _id: "$school",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ]);
+
+    const formattedStats = collegeStats.map((stat) => ({
+      college: stat._id,
+      students: stat.count,
+    }));
+
+    res.json({
+      success: true,
+      data: formattedStats,
+      totalColleges: collegeStats.length,
+      totalStudents: collegeStats.reduce((sum, stat) => sum + stat.count, 0),
+    });
+  } catch (error) {
+    console.error("Error fetching public college stats:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch college statistics",
+    });
+  }
+});
 
 // API Health check route
 app.get("/api/health", (req, res) => {
