@@ -160,7 +160,18 @@ const Navbar = () => {
                         {user.name}
                       </p>
                       <p className="text-xs text-gray-500">{user.email}</p>
+                      {user.school && (
+                        <p className="text-xs text-gray-500">{user.school}</p>
+                      )}
                     </div>
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="w-full flex items-center space-x-2 px-4 py-2 text-left text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>Profile</span>
+                    </Link>
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center space-x-2 px-4 py-2 text-left text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"

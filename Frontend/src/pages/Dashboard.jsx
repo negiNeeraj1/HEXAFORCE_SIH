@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import {
   LineChart,
   BarChart,
@@ -30,9 +31,11 @@ import AchievementCard from "../Components/dashboard/AchievementCard";
 import StatCard from "../Components/dashboard/StatCard";
 import QuizStats from "../Components/dashboard/QuizStats";
 import QuizHistory from "../Components/dashboard/QuizHistory";
+import CollegeStats from "../Components/dashboard/CollegeStats";
 import ecoChallengeService from "../services/ecoChallengeService";
 
 const Dashboard = () => {
+  const { user } = useAuth();
   const [userPoints, setUserPoints] = useState(null);
   const [userChallenges, setUserChallenges] = useState([]);
   const [funChallengeStats, setFunChallengeStats] = useState(null);
@@ -110,6 +113,11 @@ const Dashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">Eco Dashboard</h1>
+            {user?.school && (
+              <p className="text-lg text-gray-500 mt-1 font-medium">
+                🎓 {user.school}
+              </p>
+            )}
             <p className="text-gray-600 mt-1">
               Track your environmental knowledge and sustainability progress
             </p>
@@ -142,6 +150,32 @@ const Dashboard = () => {
             </motion.a>
           </div>
         </div>
+
+        {/* School Information */}
+        {user?.school && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 shadow-lg border border-blue-200/50">
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-3xl">🎓</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                    Studying at {user.school}
+                  </h2>
+                  <p className="text-gray-600">
+                    Your institution supports your environmental learning
+                    journey. Keep up the great work in sustainability!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Eco Challenge Stats */}
         {userPoints && (
@@ -380,6 +414,11 @@ const Dashboard = () => {
         {/* Quiz Statistics */}
         <div className="mb-8">
           <QuizStats />
+        </div>
+
+        {/* College Statistics */}
+        <div className="mb-8">
+          <CollegeStats />
         </div>
 
         {/* Recent Quiz History */}

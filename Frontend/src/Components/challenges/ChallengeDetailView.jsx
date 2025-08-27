@@ -1,23 +1,60 @@
 import React, { useState } from "react";
 import CongratulationsView from "./CongratulationsView";
 import ChallengeImage from "./ChallengeImage";
+import ecoChallengeService from "../../services/ecoChallengeService";
 
-const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
+const ChallengeDetailView = ({
+  challenge,
+  onChallengeUpdated,
+  onClose,
+  onChallengeCompleted,
+}) => {
   const [currentChallenge, setCurrentChallenge] = useState(challenge);
   const [showCongratulations, setShowCongratulations] = useState(false);
+  const [completing, setCompleting] = useState(false);
 
   const handleCompleteChallenge = async () => {
     try {
-      // Call the API to complete the challenge
-      await onChallengeUpdated(currentChallenge);
+      setCompleting(true);
 
-      // Update local state
-      const updatedChallenge = { ...currentChallenge, isStarted: true };
-      setCurrentChallenge(updatedChallenge);
-      setShowCongratulations(true);
+      // Call the backend API to complete the challenge
+      const response = await ecoChallengeService.completeDailyTask(
+        challenge._id,
+        {
+          plasticSaved: challenge.impact?.plasticSaved || 0,
+          co2Reduced: challenge.impact?.co2Reduced || 0,
+          waterSaved: challenge.impact?.waterSaved || 0,
+          energySaved: challenge.impact?.energySaved || 0,
+        }
+      );
+
+      if (response.success) {
+        console.log("Challenge completed successfully:", response.data);
+
+        // Update local state
+        const updatedChallenge = { ...currentChallenge, isStarted: true };
+        setCurrentChallenge(updatedChallenge);
+        setShowCongratulations(true);
+
+        // Notify parent component
+        if (onChallengeUpdated) {
+          onChallengeUpdated(updatedChallenge);
+        }
+
+        // Notify dashboard to refresh data
+        if (onChallengeCompleted) {
+          onChallengeCompleted(response.data);
+        }
+      } else {
+        throw new Error(response.error || "Failed to complete challenge");
+      }
     } catch (error) {
       console.error("Failed to complete challenge:", error);
-      alert("Failed to complete challenge. Please try again.");
+      alert(
+        `Failed to complete challenge: ${error.message}. Please try again.`
+      );
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -107,14 +144,16 @@ const ChallengeDetailView = ({ challenge, onChallengeUpdated, onClose }) => {
           {/* Complete Button */}
           <button
             onClick={handleCompleteChallenge}
-            disabled={currentChallenge.isStarted}
+            disabled={currentChallenge.isStarted || completing}
             className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-colors mt-6 ${
-              currentChallenge.isStarted
+              currentChallenge.isStarted || completing
                 ? "bg-gray-400 text-gray-600 cursor-not-allowed"
                 : "bg-green-600 text-white hover:bg-green-700"
             }`}
           >
-            {currentChallenge.isStarted
+            {completing
+              ? "Completing..."
+              : currentChallenge.isStarted
               ? "Challenge Completed"
               : "Complete Challenge!"}
           </button>

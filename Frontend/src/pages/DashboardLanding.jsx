@@ -12,11 +12,21 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import CollegeStats from "../Components/dashboard/CollegeStats";
 
 const StudyAIDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUserData } = useAuth();
+
+  // Debug logging
+  useEffect(() => {
+    console.log("DashboardLanding - Current user data:", user);
+    if (user && !user.school) {
+      console.log("User exists but no school field, refreshing data...");
+      refreshUserData();
+    }
+  }, [user, refreshUserData]);
 
   const userName = user?.name ? user.name.split(" ")[0] : "User";
 
@@ -66,17 +76,66 @@ const StudyAIDashboard = () => {
       <div className="flex-1">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 relative">
+            {/* School Badge - Top Right */}
+            {user?.school && (
+              <div className="absolute top-0 right-0 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-blue-200/50 shadow-lg">
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg">🎓</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {user.school}
+                  </span>
+                </div>
+              </div>
+            )}
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full mb-4 shadow-lg">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-600 via-blue-600 to-emerald-600 bg-clip-text text-transparent mb-2">
               {getGreeting()}, {userName}!
             </h1>
+            {user?.school ? (
+              <p className="text-lg text-gray-500 mb-3 font-medium">
+                🎓 {user.school}
+              </p>
+            ) : (
+              <p className="text-lg text-gray-400 mb-3 font-medium">
+                🎓 Institution not set
+              </p>
+            )}
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Ready to make an eco impact today? Learn, act, and track your
               sustainability journey.
             </p>
+          </div>
+
+          {/* School Information Card */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-blue-200/50 shadow-lg">
+            <div className="flex items-center justify-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-2xl">🎓</span>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                  {user?.school
+                    ? `Welcome from ${user.school}`
+                    : "Welcome to EcoLearn"}
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  {user?.school
+                    ? "Your institution is proud to have eco-conscious students like you!"
+                    : "Start your environmental learning journey today!"}
+                </p>
+                {!user?.school && (
+                  <button
+                    onClick={refreshUserData}
+                    className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                  >
+                    Refresh Profile Data
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Stats Cards */}
@@ -99,6 +158,11 @@ const StudyAIDashboard = () => {
                 <p className="text-sm text-gray-600">{stat.label}</p>
               </div>
             ))}
+          </div>
+
+          {/* College Statistics */}
+          <div className="mb-12">
+            <CollegeStats />
           </div>
 
           {/* Motivational Quote */}

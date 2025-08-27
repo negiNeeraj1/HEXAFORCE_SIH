@@ -15,7 +15,7 @@ import { useNavigate, Link } from "react-router-dom";
 const Signup = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", school: "", email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +25,7 @@ const Signup = () => {
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => password.length >= 8;
   const validateName = (name) => name.trim().length > 0;
+  const validateSchool = (school) => school.trim().length > 0;
 //handling hanges
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -38,6 +39,7 @@ const Signup = () => {
     setFormError("");
     const errs = {};
     if (!validateName(form.name)) errs.name = "Name is required";
+    if (!validateSchool(form.school)) errs.school = "School/College name is required";
     if (!validateEmail(form.email))
       errs.email = "Please enter a valid email address";
     if (!validatePassword(form.password))
@@ -47,7 +49,7 @@ const Signup = () => {
       setIsLoading(false);
       return;
     }
-    const result = await signup(form.name, form.email, form.password);
+    const result = await signup(form.name, form.school, form.email, form.password);
     setIsLoading(false);
     if (result.success) {
       setShowSuccess(true);
@@ -106,6 +108,38 @@ const Signup = () => {
               <div className="mt-1 text-sm text-red-600 flex items-center animate-slideDown">
                 <XCircle className="h-4 w-4 mr-1" />
                 {errors.name}
+              </div>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              School/College Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                value={form.school}
+                onChange={(e) => handleChange("school", e.target.value)}
+                placeholder="Enter your school or college name"
+                className={`w-full pl-10 pr-10 py-3 border-2 rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                  errors.school
+                    ? "border-red-400 bg-red-50 animate-pulse"
+                    : "border-gray-200 focus:border-blue-500 hover:border-gray-300"
+                }`}
+              />
+              {errors.school && (
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <XCircle className="h-5 w-5 text-red-400" />
+                </div>
+              )}
+            </div>
+            {errors.school && (
+              <div className="mt-1 text-sm text-red-600 flex items-center animate-slideDown">
+                <XCircle className="h-4 w-4 mr-1" />
+                {errors.school}
               </div>
             )}
           </div>

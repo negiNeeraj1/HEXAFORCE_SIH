@@ -93,6 +93,21 @@ const EcoChallenges = () => {
     }
   };
 
+  // Function to refresh dashboard data after challenge completion
+  const handleChallengeCompleted = async (completionData) => {
+    try {
+      console.log("Challenge completed, refreshing data...", completionData);
+      
+      // Refresh challenges data
+      await loadChallenges();
+      
+      // You can also trigger a dashboard refresh here if needed
+      // This will be handled by the parent component
+    } catch (error) {
+      console.error("Failed to refresh data after challenge completion:", error);
+    }
+  };
+
   const getCategoryIcon = (category) => {
     const icons = {
       "Waste Reduction": "♻️",

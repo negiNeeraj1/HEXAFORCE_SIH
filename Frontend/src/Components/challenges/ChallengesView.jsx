@@ -6,8 +6,9 @@ import ChallengeVerificationModal from "./ChallengeVerificationModal";
 const ChallengesView = ({
   challenges,
   onChallengeUpdated,
-  loading = false,
-  error = "",
+  onChallengeCompleted,
+  loading,
+  error,
 }) => {
   const [selectedChallenge, setSelectedChallenge] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -202,6 +203,7 @@ const ChallengesView = ({
           challenge={selectedChallenge}
           onChallengeUpdated={handleChallengeUpdated}
           onClose={handleCloseModal}
+          onChallengeCompleted={onChallengeCompleted}
         />
       )}
 

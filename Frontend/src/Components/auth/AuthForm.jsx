@@ -7,6 +7,7 @@ const AuthForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    school: "",
     email: "",
     password: "",
   });
@@ -76,6 +77,27 @@ const AuthForm = () => {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="John Doe"
                 value={formData.name}
+                onChange={handleChange}
+              />
+            </div>
+          )}
+
+          {!isLogin && (
+            <div>
+              <label
+                htmlFor="school"
+                className="block text-sm font-medium text-gray-700"
+              >
+                School/College Name
+              </label>
+              <input
+                id="school"
+                name="school"
+                type="text"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Enter your school or college name"
+                value={formData.school}
                 onChange={handleChange}
               />
             </div>

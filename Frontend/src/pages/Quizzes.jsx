@@ -79,6 +79,8 @@ const Quizzes = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]); // Track user's answers
   const [quizStartTime, setQuizStartTime] = useState(null);
+  const [pointsEarned, setPointsEarned] = useState(null);
+  const [newBadges, setNewBadges] = useState([]);
 
   // Timer effect
   useEffect(() => {
@@ -196,9 +198,17 @@ const Quizzes = () => {
       );
       console.log("Quiz attempt saved successfully:", result);
 
-      // Show any insights from the backend
-      if (result.data && result.data.insights) {
-        console.log("Performance insights:", result.data.insights);
+      // Extract points and badges from response
+      if (result.data) {
+        if (result.data.pointsEarned) {
+          setPointsEarned(result.data.pointsEarned);
+        }
+        if (result.data.newBadges) {
+          setNewBadges(result.data.newBadges);
+        }
+        if (result.data.insights) {
+          console.log("Performance insights:", result.data.insights);
+        }
       }
     } catch (error) {
       console.error("Error saving quiz attempt:", error);
@@ -336,6 +346,83 @@ const Quizzes = () => {
               <div className="text-gray-600 font-medium">Time Taken</div>
             </div>
           </motion.div>
+
+          {/* Points and Badges */}
+          {(pointsEarned || newBadges.length > 0) && (
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mb-8"
+            >
+              {/* Points Earned */}
+              {pointsEarned && (
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+                    🎯 Points Earned!
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div className="bg-white rounded-lg p-4 border border-blue-200">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {pointsEarned.base}
+                      </div>
+                      <div className="text-sm text-gray-600">Base Points</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 border border-green-200">
+                      <div className="text-2xl font-bold text-green-600">
+                        {pointsEarned.bonus}
+                      </div>
+                      <div className="text-sm text-gray-600">Performance Bonus</div>
+                    </div>
+                    <div className="bg-white rounded-lg p-4 border border-yellow-200">
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {pointsEarned.speed}
+                      </div>
+                      <div className="text-sm text-gray-600">Speed Bonus</div>
+                    </div>
+                  </div>
+                  <div className="text-center mt-4">
+                    <div className="text-3xl font-bold text-purple-600">
+                      Total: {pointsEarned.total} Points!
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* New Badges */}
+              {newBadges.length > 0 && (
+                <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 border border-yellow-200">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4 text-center">
+                    🏆 New Badges Unlocked!
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {newBadges.map((badge, index) => (
+                      <motion.div
+                        key={badge.id}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+                        className="bg-white rounded-lg p-4 border border-yellow-200 text-center"
+                      >
+                        <div className="text-4xl mb-2">{badge.icon}</div>
+                        <div className="font-semibold text-gray-900 mb-1">
+                          {badge.name}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {badge.description}
+                        </div>
+                        {badge.pointsReward > 0 && (
+                          <div className="text-xs text-green-600 mt-1">
+                            +{badge.pointsReward} points reward
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* Progress Bar */}
           <motion.div
