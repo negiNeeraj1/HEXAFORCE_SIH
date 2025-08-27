@@ -1,6 +1,6 @@
 // Quiz Attempt Service for managing quiz history and attempts
 
-import config from "./config.js";
+import config from "../config.js";
 
 const API_BASE = config.API_BASE_URL;
 
