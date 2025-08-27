@@ -7,7 +7,7 @@ import quizAttemptService from "../services/quizAttemptService";
 import { motion } from "framer-motion";
 import QuizBanner from "../images/QuizBanner.jpg";
 import { Clock, CheckCircle, XCircle, Award, RotateCcw } from "lucide-react";
-
+//below the subject title
 const SUBJECTS = [
   "Climate Change & Global Warming",
   "Biodiversity & Ecosystems",
