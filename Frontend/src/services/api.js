@@ -1,8 +1,9 @@
 // src/services/api.js
 import axios from "axios";
+import config from "../config.js";
 
-// Use environment variable in production, fallback to localhost in development
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Use environment variable in production, fallback to deployed backend
+const baseURL = config.API_BASE_URL;
 
 console.log("API base URL:", baseURL); // Helpful for debugging
 
