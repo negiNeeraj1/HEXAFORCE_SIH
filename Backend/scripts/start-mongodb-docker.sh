@@ -21,3 +21,4 @@ echo ""
 echo "To stop MongoDB: docker-compose down"
 echo "To view logs: docker-compose logs -f mongodb"
 
+
