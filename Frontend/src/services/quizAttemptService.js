@@ -1,9 +1,8 @@
 // Quiz Attempt Service for managing quiz history and attempts
 
-const API_BASE =
-  import config from "./config.js";
+import config from "./config.js";
 
-const API_BASE_URL = config.API_BASE_URL;
+const API_BASE = config.API_BASE_URL;
 
 class QuizAttemptService {
   // Get authentication headers

@@ -1,9 +1,8 @@
 
 
-const QUIZ_API_BASE =
-  import config from "./config.js";
+import config from "./config.js";
 
-const API_BASE_URL = config.API_BASE_URL;
+const QUIZ_API_BASE = config.API_BASE_URL;
 
 class QuizService {
   // Get all published quizzes for students
