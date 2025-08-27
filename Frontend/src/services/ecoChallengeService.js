@@ -89,6 +89,11 @@ class EcoChallengeService {
 
   async completeDailyTask(challengeId, impact = {}) {
     try {
+      // Validate challenge ID
+      if (!challengeId || challengeId === "undefined") {
+        throw new Error("Invalid challenge ID provided");
+      }
+
       const response = await fetch(
         `${API_BASE}/eco/challenges/${challengeId}/complete`,
         {
@@ -101,6 +106,12 @@ class EcoChallengeService {
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error("Authentication failed. Please log in again.");
+        } else if (response.status === 429) {
+          throw new Error(
+            "Too many requests. Please wait a moment and try again."
+          );
+        } else if (response.status === 500) {
+          throw new Error("Server error. Please try again later.");
         }
         throw new Error(
           `Failed to complete daily task: ${response.statusText}`

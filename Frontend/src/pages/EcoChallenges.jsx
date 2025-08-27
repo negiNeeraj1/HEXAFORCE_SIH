@@ -18,6 +18,7 @@ import {
   ChallengesView,
   useChallengesViewModel,
 } from "../Components/challenges";
+import ChallengeDetailView from "../Components/challenges/ChallengeDetailView";
 
 const EcoChallenges = () => {
   const [challenges, setChallenges] = useState([]);
@@ -32,6 +33,15 @@ const EcoChallenges = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showFunChallenges, setShowFunChallenges] = useState(false);
 
+  // Add state for challenge detail modal
+  const [selectedChallenge, setSelectedChallenge] = useState(null);
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
+
+  // Add state for completed challenges (local storage)
+  const [completedChallenges, setCompletedChallenges] = useState([]);
+  const [totalTasksCompleted, setTotalTasksCompleted] = useState(0);
+  const [syncingBackend, setSyncingBackend] = useState(false);
+
   const {
     challenges: funChallenges,
     startChallenge,
@@ -45,7 +55,31 @@ const EcoChallenges = () => {
 
   useEffect(() => {
     loadChallenges();
+    loadCompletedChallenges();
   }, [currentPage, filters]);
+
+  // Load completed challenges from localStorage
+  const loadCompletedChallenges = () => {
+    try {
+      const saved = localStorage.getItem("completedEcoChallenges");
+      if (saved) {
+        const completed = JSON.parse(saved);
+        setCompletedChallenges(completed);
+        setTotalTasksCompleted(completed.length);
+      }
+    } catch (error) {
+      console.error("Failed to load completed challenges:", error);
+    }
+  };
+
+  // Save completed challenges to localStorage
+  const saveCompletedChallenges = (completed) => {
+    try {
+      localStorage.setItem("completedEcoChallenges", JSON.stringify(completed));
+    } catch (error) {
+      console.error("Failed to save completed challenges:", error);
+    }
+  };
 
   const loadChallenges = async () => {
     try {
@@ -57,7 +91,28 @@ const EcoChallenges = () => {
       });
 
       if (response.success) {
-        setChallenges(response.data.challenges);
+        console.log("Loaded challenges:", response.data.challenges);
+        if (response.data.challenges.length > 0) {
+          console.log("First challenge ID:", response.data.challenges[0]._id);
+          console.log(
+            "First challenge keys:",
+            Object.keys(response.data.challenges[0])
+          );
+        }
+
+        // Mark challenges as completed if they exist in localStorage
+        const challengesWithStatus = response.data.challenges.map(
+          (challenge) => ({
+            ...challenge,
+            isStarted: completedChallenges.some(
+              (completed) =>
+                completed.challengeId === challenge._id ||
+                completed.challengeId === challenge.id
+            ),
+          })
+        );
+
+        setChallenges(challengesWithStatus);
         setTotalPages(response.data.pagination.totalPages);
         setError("");
       }
@@ -93,18 +148,106 @@ const EcoChallenges = () => {
     }
   };
 
-  // Function to refresh dashboard data after challenge completion
+  // Add function to handle challenge selection
+  const handleChallengePress = (challenge) => {
+    console.log("=== ECO CHALLENGE DEBUG ===");
+    console.log("Full challenge object:", challenge);
+    console.log("Challenge ID (_id):", challenge._id);
+    console.log("Challenge ID (id):", challenge.id);
+    console.log("Challenge type:", typeof challenge);
+    console.log("Challenge keys:", Object.keys(challenge));
+    console.log("Challenge category:", challenge.category);
+    console.log("Challenge title:", challenge.title);
+    console.log("==========================");
+
+    // Validate challenge has a proper ID
+    if (
+      !challenge._id ||
+      challenge._id === "1" ||
+      challenge._id === "undefined"
+    ) {
+      console.error("Invalid challenge ID:", challenge._id);
+      alert("Invalid challenge data. Please refresh and try again.");
+      return;
+    }
+
+    // Double-check that this challenge exists in our challenges array
+    const foundChallenge = challenges.find((c) => c._id === challenge._id);
+    if (!foundChallenge) {
+      console.error("Challenge not found in challenges array:", challenge);
+      alert("Challenge data mismatch. Please refresh and try again.");
+      return;
+    }
+
+    console.log("Selected challenge validated:", foundChallenge);
+    setSelectedChallenge(foundChallenge);
+    setShowChallengeModal(true);
+  };
+
+  // Add function to close challenge modal
+  const handleCloseChallengeModal = () => {
+    setShowChallengeModal(false);
+    setSelectedChallenge(null);
+  };
+
+  // Add function to handle challenge completion (local)
   const handleChallengeCompleted = async (completionData) => {
     try {
+      console.log("Eco challenge completed locally:", completionData);
+
+      // Add to completed challenges
+      const newCompletedChallenge = {
+        challengeId: completionData.challengeId,
+        title: completionData.title,
+        points: completionData.points,
+        completedAt: completionData.completedAt,
+        category: selectedChallenge?.category || "general",
+      };
+
+      const updatedCompleted = [...completedChallenges, newCompletedChallenge];
+      setCompletedChallenges(updatedCompleted);
+      setTotalTasksCompleted(updatedCompleted.length);
+
+      // Save to localStorage
+      saveCompletedChallenges(updatedCompleted);
+
+      // Update challenges array to mark as completed
+      setChallenges((prev) =>
+        prev.map((challenge) =>
+          challenge._id === completionData.challengeId ||
+          challenge.id === completionData.challengeId
+            ? { ...challenge, isStarted: true }
+            : challenge
+        )
+      );
+
+      // Close the modal
+      handleCloseChallengeModal();
+
+      // Show success message
+      alert(
+        `Challenge completed successfully! +${completionData.points} points`
+      );
+    } catch (error) {
+      console.error("Failed to handle challenge completion:", error);
+    }
+  };
+
+  // Function to refresh dashboard data after challenge completion
+  const handleFunChallengeCompleted = async (completionData) => {
+    try {
       console.log("Challenge completed, refreshing data...", completionData);
-      
+
       // Refresh challenges data
       await loadChallenges();
-      
+
       // You can also trigger a dashboard refresh here if needed
       // This will be handled by the parent component
     } catch (error) {
-      console.error("Failed to refresh data after challenge completion:", error);
+      console.error(
+        "Failed to refresh data after challenge completion:",
+        error
+      );
     }
   };
 
@@ -242,6 +385,7 @@ const EcoChallenges = () => {
           <ChallengesView
             challenges={funChallenges}
             onChallengeUpdated={startChallenge}
+            onChallengeCompleted={handleFunChallengeCompleted}
             loading={funChallengesLoading}
             error={funChallengesError}
           />
@@ -325,7 +469,8 @@ const EcoChallenges = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow"
+                      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                      onClick={() => handleChallengePress(challenge)}
                     >
                       {/* Challenge Header */}
                       <div className="p-6">
@@ -391,21 +536,64 @@ const EcoChallenges = () => {
 
                         {/* Action Button */}
                         <button
-                          onClick={() => handleJoinChallenge(challenge._id)}
-                          disabled={challenge.isJoined}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!challenge.isStarted) {
+                              handleJoinChallenge(challenge._id);
+                            }
+                          }}
+                          disabled={challenge.isStarted}
                           className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
-                            challenge.isJoined
-                              ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                            challenge.isStarted
+                              ? "bg-green-100 text-green-700 cursor-not-allowed"
                               : "bg-green-600 text-white hover:bg-green-700"
                           }`}
                         >
-                          {challenge.isJoined
-                            ? "Already Joined"
-                            : "Join Challenge"}
+                          {challenge.isStarted
+                            ? "✅ Completed"
+                            : "Complete Challenge"}
                         </button>
                       </div>
                     </motion.div>
                   ))}
+                </div>
+
+                {/* Progress Summary */}
+                <div className="mt-8 bg-white rounded-lg shadow-sm p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Your Eco Challenge Progress
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        {totalTasksCompleted}
+                      </div>
+                      <div className="text-sm text-gray-600">Completed</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {challenges.filter((c) => !c.isStarted).length}
+                      </div>
+                      <div className="text-sm text-gray-600">Remaining</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-purple-600">
+                        {totalTasksCompleted * 50}
+                      </div>
+                      <div className="text-sm text-gray-600">Points Earned</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">
+                        {challenges.length > 0
+                          ? Math.round(
+                              (totalTasksCompleted / challenges.length) * 100
+                            )
+                          : 0}
+                        %
+                      </div>
+                      <div className="text-sm text-gray-600">Progress</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Pagination */}
@@ -435,6 +623,18 @@ const EcoChallenges = () => {
           </>
         )}
       </div>
+
+      {/* Challenge Detail Modal */}
+      {showChallengeModal && selectedChallenge && (
+        <>
+          {console.log("Opening modal with challenge:", selectedChallenge)}
+          <ChallengeDetailView
+            challenge={selectedChallenge}
+            onClose={handleCloseChallengeModal}
+            onChallengeCompleted={handleChallengeCompleted}
+          />
+        </>
+      )}
     </div>
   );
 };

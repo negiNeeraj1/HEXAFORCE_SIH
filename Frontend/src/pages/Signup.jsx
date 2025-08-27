@@ -16,7 +16,12 @@ import { useNavigate, Link } from "react-router-dom";
 const Signup = () => {
   const { signup } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", school: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    school: "",
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -26,25 +31,22 @@ const Signup = () => {
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePassword = (password) => password.length >= 8;
   const validateName = (name) => name.trim().length > 0;
-<<<<<<< HEAD
   const validateSchool = (school) => school.trim().length > 0;
-//handling hanges
-=======
-//handling hanges 
->>>>>>> 8c1657e5b9cf9b75281ce9c4326e246615067762
+  //handling hanges
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormError("");
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
-//handling the content
+  //handling the content
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setFormError("");
     const errs = {};
     if (!validateName(form.name)) errs.name = "Name is required";
-    if (!validateSchool(form.school)) errs.school = "School/College name is required";
+    if (!validateSchool(form.school))
+      errs.school = "School/College name is required";
     if (!validateEmail(form.email))
       errs.email = "Please enter a valid email address";
     if (!validatePassword(form.password))
@@ -54,7 +56,12 @@ const Signup = () => {
       setIsLoading(false);
       return;
     }
-    const result = await signup(form.name, form.school, form.email, form.password);
+    const result = await signup(
+      form.name,
+      form.school,
+      form.email,
+      form.password
+    );
     setIsLoading(false);
     if (result.success) {
       setShowSuccess(true);
@@ -222,7 +229,7 @@ const Signup = () => {
                 {errors.password}
               </div>
             )}
-          </div> 
+          </div>
           {formError && (
             <div className="text-red-600 text-sm flex items-center animate-slideDown">
               <XCircle className="h-4 w-4 mr-1" />

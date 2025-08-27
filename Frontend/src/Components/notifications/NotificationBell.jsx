@@ -22,10 +22,10 @@ const NotificationBell = () => {
     loadNotifications();
     loadUnreadCount();
 
-    // Refresh every 30 seconds
+    // Refresh every 60 seconds (reduced from 30 to prevent rate limiting)
     const interval = setInterval(() => {
       loadUnreadCount();
-    }, 30000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -58,10 +58,12 @@ const NotificationBell = () => {
       }
     } catch (error) {
       console.error("Failed to load notifications:", error);
-      
+
       // Provide more user-friendly error messages
       if (error.message.includes("Backend server is not available")) {
-        console.warn("Server is currently unavailable. Notifications will be retried later.");
+        console.warn(
+          "Server is currently unavailable. Notifications will be retried later."
+        );
       } else if (error.message.includes("Authentication failed")) {
         console.warn("Authentication failed. User may need to log in again.");
       } else if (error.message.includes("No authentication token found")) {
@@ -78,7 +80,7 @@ const NotificationBell = () => {
       setUnreadCount(count);
     } catch (error) {
       console.error("Failed to load unread count:", error);
-      
+
       // Don't show errors for unread count, just set to 0
       setUnreadCount(0);
     }

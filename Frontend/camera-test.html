@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .camera-container {
+            margin: 20px 0;
+        }
+        video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Camera Test Page</h1>
+    <p>This page tests basic camera functionality in your browser.</p>
+    
+    <div class="camera-container">
+        <button onclick="startCamera()">Start Camera</button>
+        <button onclick="stopCamera()">Stop Camera</button>
+        <button onclick="capturePhoto()">Capture Photo</button>
+    </div>
+    
+    <div id="status"></div>
+    
+    <video id="video" autoplay playsinline style="display: none;"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <img id="photo" style="display: none; max-width: 100%; border: 2px solid #ccc; border-radius: 8px;">
+    
+    <div id="debug"></div>
+
+    <script>
+        let stream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const photo = document.getElementById('photo');
+        const status = document.getElementById('status');
+        const debug = document.getElementById('debug');
+
+        function log(message) {
+            console.log(message);
+            debug.innerHTML += '<p>' + message + '</p>';
+        }
+
+        async function startCamera() {
+            try {
+                log('Starting camera...');
+                log('navigator.mediaDevices available: ' + !!navigator.mediaDevices);
+                log('getUserMedia available: ' + !!navigator.mediaDevices?.getUserMedia);
+                
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('Camera API not supported');
+                }
+
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+
+                log('Camera started successfully!');
+                log('Stream tracks: ' + stream.getTracks().length);
+                
+                video.srcObject = stream;
+                video.style.display = 'block';
+                photo.style.display = 'none';
+                
+                status.innerHTML = '<div class="success">Camera started successfully!</div>';
+                
+            } catch (error) {
+                log('Camera error: ' + error.name + ' - ' + error.message);
+                status.innerHTML = '<div class="error">Camera error: ' + error.message + '</div>';
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                video.style.display = 'none';
+                log('Camera stopped');
+                status.innerHTML = '<div class="success">Camera stopped</div>';
+            }
+        }
+
+        function capturePhoto() {
+            if (!stream) {
+                status.innerHTML = '<div class="error">Please start camera first</div>';
+                return;
+            }
+
+            try {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                const dataURL = canvas.toDataURL('image/jpeg');
+                photo.src = dataURL;
+                photo.style.display = 'block';
+                video.style.display = 'none';
+                
+                log('Photo captured successfully!');
+                status.innerHTML = '<div class="success">Photo captured successfully!</div>';
+                
+            } catch (error) {
+                log('Photo capture error: ' + error.message);
+                status.innerHTML = '<div class="error">Photo capture failed: ' + error.message + '</div>';
+            }
+        }
+
+        // Auto-start camera when page loads
+        window.addEventListener('load', () => {
+            log('Page loaded, checking camera support...');
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                log('Camera API is supported');
+            } else {
+                log('Camera API is NOT supported');
+            }
+        });
+    </script>
+</body>
+</html>

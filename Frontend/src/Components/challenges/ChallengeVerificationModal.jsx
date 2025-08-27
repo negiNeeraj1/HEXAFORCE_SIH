@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, CheckCircle, XCircle, Loader2, Camera } from "lucide-react";
+import { X, CheckCircle, XCircle, Loader2, Camera, Upload } from "lucide-react";
 import ChallengeCamera from "./ChallengeCamera";
 import imageAnalysisService from "../../services/imageAnalysisService";
 
@@ -22,12 +22,16 @@ const ChallengeVerificationModal = ({
     setError("");
 
     try {
+      console.log("Starting image analysis for challenge:", challenge.title);
+      console.log("Image blob:", imageBlob);
+
       // Analyze image with Google Vision API
       const result = await imageAnalysisService.analyzeImage(
         imageBlob,
         challenge.title
       );
 
+      console.log("Analysis result:", result);
       setVerificationResult(result);
       setStep("result");
     } catch (error) {
@@ -55,6 +59,10 @@ const ChallengeVerificationModal = ({
   const handleClose = () => {
     resetModal();
     onClose();
+  };
+
+  const handleRetry = () => {
+    resetModal();
   };
 
   if (!isOpen) return null;
@@ -95,6 +103,10 @@ const ChallengeVerificationModal = ({
               <h3 className="text-lg font-semibold mb-2">Take a Photo</h3>
               <p className="text-gray-600 text-sm">
                 Capture a clear photo that shows you completing this challenge
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                You can also upload a photo from your device if camera is not
+                available
               </p>
             </div>
             <ChallengeCamera
@@ -193,7 +205,7 @@ const ChallengeVerificationModal = ({
 
                 <div className="flex gap-3">
                   <button
-                    onClick={resetModal}
+                    onClick={handleRetry}
                     className="flex-1 bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700"
                   >
                     Try Again

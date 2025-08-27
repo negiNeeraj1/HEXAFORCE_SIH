@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Camera, X, RotateCcw, Check } from "lucide-react";
+import { Camera, X, RotateCcw, Check, Upload, AlertCircle } from "lucide-react";
 
 const ChallengeCamera = ({
   challengeTitle,
@@ -9,13 +9,21 @@ const ChallengeCamera = ({
 }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
   const [stream, setStream] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
+      // Check browser compatibility first
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Camera not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.");
+        return;
+      }
+      
       startCamera();
     } else {
       stopCamera();
@@ -28,21 +36,45 @@ const ChallengeCamera = ({
 
   const startCamera = async () => {
     try {
+      setIsLoading(true);
       setError("");
+      
+      console.log("Starting camera...");
+      console.log("navigator.mediaDevices available:", !!navigator.mediaDevices);
+      console.log("getUserMedia available:", !!navigator.mediaDevices?.getUserMedia);
+      
+      // Simple camera request - this should trigger permission prompt
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: "environment", // Use back camera
           width: { ideal: 1280 },
           height: { ideal: 720 },
         },
       });
 
+      console.log("Camera started successfully");
+      console.log("Stream tracks:", mediaStream.getTracks());
       setStream(mediaStream);
       videoRef.current.srcObject = mediaStream;
       setIsCameraActive(true);
+      
     } catch (error) {
       console.error("Camera access failed:", error);
-      setError("Camera access denied. Please allow camera permissions.");
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        setError("Camera access denied. Please allow camera permissions in your browser.");
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        setError("No camera found on your device.");
+      } else if (error.name === 'NotReadableError') {
+        setError("Camera is in use by another application. Please close other camera apps.");
+      } else if (error.name === 'NotSupportedError') {
+        setError("Camera not supported in this browser. Please use a modern browser.");
+      } else {
+        setError(`Camera error: ${error.message}`);
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,7 +87,7 @@ const ChallengeCamera = ({
   };
 
   const capturePhoto = () => {
-    if (!isCameraActive) return;
+    if (!isCameraActive || !videoRef.current) return;
 
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -86,8 +118,21 @@ const ChallengeCamera = ({
     }
   };
 
-  const switchCamera = async () => {
-    stopCamera();
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      setCapturedImage(file);
+    } else {
+      setError("Please select a valid image file.");
+    }
+  };
+
+  const openFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const retryCamera = async () => {
+    setError("");
     await startCamera();
   };
 
@@ -117,21 +162,49 @@ const ChallengeCamera = ({
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
-            {error}
+            <div className="flex items-start gap-2">
+              <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium">{error}</p>
+                <div className="mt-2 text-xs">
+                  <p><strong>To enable camera:</strong></p>
+                  <p>• Look for a camera icon in your browser's address bar</p>
+                  <p>• Click it and select "Allow"</p>
+                  <p>• Or use "Upload Photo" instead</p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
         <div className="relative mb-4">
           {!capturedImage ? (
             <div className="relative">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="w-full h-64 bg-gray-900 rounded-lg object-cover"
-              />
+              {isLoading ? (
+                <div className="w-full h-64 bg-gray-900 rounded-lg flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+                    <p className="text-sm">Starting camera...</p>
+                  </div>
+                </div>
+              ) : isCameraActive ? (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-64 bg-gray-900 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-900 rounded-lg flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <Camera size={48} className="mx-auto mb-2 opacity-50" />
+                    <p className="text-sm opacity-75">Camera not active</p>
+                  </div>
+                </div>
+              )}
+              
               {isCameraActive && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div className="border-2 border-white border-dashed rounded-lg w-48 h-32 flex items-center justify-center">
                     <span className="text-white text-sm">
                       Frame your photo here
@@ -159,44 +232,69 @@ const ChallengeCamera = ({
           <canvas ref={canvasRef} style={{ display: "none" }} />
         </div>
 
-        <div className="flex gap-2 justify-center">
-          {!capturedImage ? (
-            <>
-              <button
-                onClick={switchCamera}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                <RotateCcw size={16} />
-                Switch
-              </button>
-              <button
-                onClick={capturePhoto}
-                disabled={!isCameraActive}
-                className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              >
-                <Camera size={16} />
-                Capture
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={retakePhoto}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                <RotateCcw size={16} />
-                Retake
-              </button>
-              <button
-                onClick={confirmPhoto}
-                className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-              >
-                <Check size={16} />
-                Use Photo
-              </button>
-            </>
-          )}
-        </div>
+        {/* Camera Controls */}
+        {!capturedImage && isCameraActive && (
+          <div className="flex gap-2 justify-center mb-3">
+            <button
+              onClick={capturePhoto}
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              <Camera size={16} />
+              Capture Photo
+            </button>
+          </div>
+        )}
+
+        {/* Fallback Options */}
+        {!isCameraActive && !capturedImage && (
+          <div className="space-y-3 mb-3">
+            <button
+              onClick={retryCamera}
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            >
+              <Camera size={16} />
+              {isLoading ? "Starting Camera..." : "Try Camera Again"}
+            </button>
+            
+            <button
+              onClick={openFileUpload}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              <Upload size={16} />
+              Upload Photo Instead
+            </button>
+          </div>
+        )}
+
+        {/* File Upload Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+
+        {/* Photo Actions */}
+        {capturedImage && (
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={retakePhoto}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+            >
+              <RotateCcw size={16} />
+              Retake
+            </button>
+            <button
+              onClick={confirmPhoto}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              <Check size={16} />
+              Use Photo
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,11 @@ const NOTIFICATION_API_BASE =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 class NotificationService {
+  constructor() {
+    this.lastUnreadCountCall = 0;
+    this.minInterval = 5000; // 5 seconds minimum between calls
+  }
+
   async checkBackendHealth() {
     try {
       const response = await fetch(
@@ -129,13 +134,21 @@ class NotificationService {
     }
   }
 
-  // Get unread notification count (optimized endpoint)
+  // Get unread notification count (optimized endpoint with rate limiting)
   async getUnreadCount() {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         return 0;
       }
+
+      // Rate limiting: prevent calls more frequent than minInterval
+      const now = Date.now();
+      if (now - this.lastUnreadCountCall < this.minInterval) {
+        console.log("Rate limiting: skipping unread count call");
+        return 0; // Return cached value or 0
+      }
+      this.lastUnreadCountCall = now;
 
       const response = await fetch(
         `${NOTIFICATION_API_BASE}/notifications/unread-count`,
@@ -148,6 +161,10 @@ class NotificationService {
       );
 
       if (!response.ok) {
+        if (response.status === 429) {
+          console.warn("Rate limited by server, will retry later");
+          return 0;
+        }
         return 0;
       }
 

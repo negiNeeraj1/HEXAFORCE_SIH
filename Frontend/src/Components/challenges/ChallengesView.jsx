@@ -17,6 +17,17 @@ const ChallengesView = ({
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   const handleChallengePress = (challenge) => {
+    console.log("Challenge pressed:", challenge);
+    console.log("Challenge ID:", challenge._id);
+    console.log("Challenge object keys:", Object.keys(challenge));
+    
+    // Ensure we have a valid challenge object
+    if (!challenge || (!challenge._id && !challenge.id)) {
+      console.error("Invalid challenge object:", challenge);
+      alert("Invalid challenge data. Please refresh and try again.");
+      return;
+    }
+    
     setSelectedChallenge(challenge);
     setShowModal(true);
   };
@@ -135,7 +146,7 @@ const ChallengesView = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredChallenges.map((challenge) => (
               <ChallengeCard
-                key={challenge.id}
+                key={challenge._id || challenge.id || challenge.title}
                 challenge={challenge}
                 onPress={handleChallengePress}
                 onVerifyChallenge={handleVerifyChallenge}
