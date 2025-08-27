@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { auth } = require("../middleware/auth");
+const { auth, userRateLimit } = require("../middleware/authImproved");
 const {
   getAllChallenges,
   getChallengeById,
@@ -18,6 +18,9 @@ router.get("/leaderboard", getLeaderboard);
 
 // Protected routes (authentication required)
 router.use(auth);
+
+// Apply rate limiting to user actions
+router.use(userRateLimit(30, 15 * 60 * 1000)); // 30 requests per 15 minutes
 
 // User challenge management
 router.post("/challenges/:challengeId/join", joinChallenge);
