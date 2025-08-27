@@ -1,5 +1,3 @@
-
-
 import config from "./config.js";
 
 const QUIZ_API_BASE = config.API_BASE_URL;
