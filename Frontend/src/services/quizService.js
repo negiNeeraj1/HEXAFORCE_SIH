@@ -1,7 +1,9 @@
 
 
 const QUIZ_API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+  import config from "./config.js";
+
+const API_BASE_URL = config.API_BASE_URL;
 
 class QuizService {
   // Get all published quizzes for students
