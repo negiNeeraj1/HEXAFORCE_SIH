@@ -24,7 +24,7 @@ const Icon = () => {
 			exit={{ opacity: 0 }}
 			transition={{ duration: 0.8 }}
 		>
-			{/* ✅ Lottie animation positioned top-right */}
+			{/* ✅ Lottie animation positioned  top-right */}
 			<div
 				ref={animationContainer}
 				className="absolute top-10 right-5 w-[700px] h-[700px] z-10"
