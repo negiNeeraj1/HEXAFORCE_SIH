@@ -22,3 +22,5 @@ exports.getBadgeProgress = async (req, res) => {
 exports.createDefaultBadges = async (req, res) => {
   res.json({ success: true, message: "createDefaultBadges working" });
 };
+
+
